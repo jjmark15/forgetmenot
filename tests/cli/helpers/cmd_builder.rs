@@ -1,3 +1,5 @@
+use std::path::Path;
+
 use assert_cmd::assert::Assert;
 use assert_cmd::Command;
 
@@ -20,6 +22,18 @@ impl CliCommandBuilder {
         self
     }
 
+    pub(crate) fn run_test_command(mut self, test_command: &str, config_path: &Path) -> Self {
+        self.select_subcommand(CliSubcommand::TestCommand);
+        self.cmd.args(&[
+            "run",
+            "--test-name",
+            test_command,
+            "--config-path",
+            config_path.as_os_str().to_str().unwrap(),
+        ]);
+        self
+    }
+
     fn select_subcommand(&mut self, subcommand: CliSubcommand) {
         self.subcommand = Some(subcommand);
     }
@@ -31,4 +45,5 @@ impl CliCommandBuilder {
 
 enum CliSubcommand {
     Version,
+    TestCommand,
 }
