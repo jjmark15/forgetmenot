@@ -1,1 +1,2 @@
+mod fails_if_test_is_a_failure;
 mod runs_command_defined_in_config;

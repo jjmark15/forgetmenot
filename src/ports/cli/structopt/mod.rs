@@ -27,6 +27,7 @@ pub(crate) fn run_cli() {
                 application_service.run_test(run_command.test_name.as_str()),
             );
             print!("{}", test_result.output());
+            exit(test_result.exit_code())
         }
     }
 }

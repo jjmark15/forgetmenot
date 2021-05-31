@@ -24,6 +24,9 @@ impl CommandExecutor for SystemProcessCommandExecutorAdapter {
                 .output()
                 .expect("failed to execute process")
         };
-        TestResult::new(String::from_utf8_lossy(&output.stdout).to_string())
+        TestResult::new(
+            String::from_utf8_lossy(&output.stdout).to_string(),
+            output.status.code().unwrap_or(0),
+        )
     }
 }

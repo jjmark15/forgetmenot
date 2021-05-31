@@ -22,12 +22,12 @@ impl CliCommandBuilder {
         self
     }
 
-    pub(crate) fn run_test_command(mut self, test_command: &str, config_path: &Path) -> Self {
+    pub(crate) fn run_test_command(mut self, config_path: &Path) -> Self {
         self.select_subcommand(CliSubcommand::TestCommand);
         self.cmd.args(&[
             "run",
             "--test-name",
-            test_command,
+            "command",
             "--config-path",
             config_path.as_os_str().to_str().unwrap(),
         ]);
