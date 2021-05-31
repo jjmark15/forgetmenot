@@ -1,10 +1,12 @@
 use crate::domain::test_provider::GetTestError;
-use crate::domain::TestNotFoundError;
+use crate::domain::{ExecuteCommandError, TestNotFoundError};
 
 #[derive(Debug, thiserror::Error)]
 pub(crate) enum RunTestError {
     #[error(transparent)]
     TestNotFound(#[from] TestNotFoundError),
+    #[error(transparent)]
+    ExecutionFailure(#[from] ExecuteCommandError),
 }
 
 impl From<GetTestError> for RunTestError {

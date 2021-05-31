@@ -26,7 +26,7 @@ impl<CE: CommandExecutor, TP: TestProvider> TestRunnerImpl<CE, TP> {
 impl<CE: CommandExecutor, TP: TestProvider> TestRunner for TestRunnerImpl<CE, TP> {
     fn run_test(&self, test_name: &str) -> Result<TestResult, RunTestError> {
         let test = self.test_provider.get(test_name)?;
-        let result = self.command_executor.execute(test.command());
+        let result = self.command_executor.execute(test.command())?;
         Ok(result)
     }
 }

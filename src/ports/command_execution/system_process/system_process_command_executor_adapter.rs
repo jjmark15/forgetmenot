@@ -1,6 +1,6 @@
 use std::process::Command;
 
-use crate::domain::{CommandExecutor, TestCommand, TestResult};
+use crate::domain::{CommandExecutor, ExecuteCommandError, TestCommand, TestResult};
 
 pub(crate) struct SystemProcessCommandExecutorAdapter {}
 
@@ -11,22 +11,18 @@ impl SystemProcessCommandExecutorAdapter {
 }
 
 impl CommandExecutor for SystemProcessCommandExecutorAdapter {
-    fn execute(&self, command: &TestCommand) -> TestResult {
-        let output = if cfg!(target_os = "windows") {
-            Command::new("cmd")
-                .args(&["/C", command.string()])
-                .output()
-                .expect("failed to execute process")
+    fn execute(&self, command: &TestCommand) -> Result<TestResult, ExecuteCommandError> {
+        let output_result = if cfg!(target_os = "windows") {
+            Command::new("cmd").args(&["/C", command.string()]).output()
         } else {
-            Command::new("sh")
-                .arg("-c")
-                .arg(command.string())
-                .output()
-                .expect("failed to execute process")
+            Command::new("sh").arg("-c").arg(command.string()).output()
         };
-        TestResult::new(
-            String::from_utf8_lossy(&output.stdout).to_string(),
-            output.status.code().unwrap_or(0),
-        )
+        match output_result {
+            Ok(output) => Ok(TestResult::new(
+                String::from_utf8_lossy(&output.stdout).to_string(),
+                output.status.code().unwrap_or(0),
+            )),
+            Err(_e) => Err(ExecuteCommandError),
+        }
     }
 }
