@@ -15,3 +15,7 @@ pub(crate) fn failing_test_config() -> ApplicationConfig {
         "./missing-command".to_string(),
     )])
 }
+
+pub(crate) fn config_with_no_test() -> ApplicationConfig {
+    ApplicationConfig::new(vec![])
+}
