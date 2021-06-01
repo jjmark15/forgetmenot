@@ -6,7 +6,7 @@ use owo_colors::OwoColorize;
 use structopt::StructOpt;
 
 use crate::application::{ApplicationService, ApplicationServiceImpl};
-use crate::domain::{Test, TestProviderImpl, TestRunnerImpl};
+use crate::domain::{Test, TestProvider, TestProviderImpl, TestRunnerImpl};
 use crate::ports::cli::structopt::cli_options::CliOptions;
 use crate::ports::command_execution::system_process::SystemProcessCommandExecutorAdapter;
 use crate::ports::config::file::FileConfigReader;
@@ -33,8 +33,10 @@ pub(crate) fn run_cli() {
 
 fn application_service(config: &ApplicationConfig) -> impl ApplicationService {
     let command_executor = SystemProcessCommandExecutorAdapter::new();
-    let test_provider =
-        TestProviderImpl::new(config.tests().iter().cloned().map(Test::from).collect());
+    let mut test_provider = TestProviderImpl::new();
+    unwrap_or_exit_app_with_error_message(
+        test_provider.add_tests(config.tests().iter().cloned().map(Test::from).collect()),
+    );
     let test_runner = TestRunnerImpl::new(command_executor, test_provider);
     ApplicationServiceImpl::new(test_runner)
 }

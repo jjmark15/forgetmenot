@@ -1,28 +1,40 @@
+use std::collections::HashMap;
+
 use crate::domain::test::Test;
 
 pub(crate) trait TestProvider {
+    fn add_tests(&mut self, tests: Vec<Test>) -> Result<(), TestAlreadyExists>;
+
     fn get(&self, test_name: &str) -> Result<&Test, GetTestError>;
 }
 
 pub(crate) struct TestProviderImpl {
-    tests: Vec<Test>,
+    tests: HashMap<String, Test>,
 }
 
 impl TestProviderImpl {
-    pub(crate) fn new(tests: Vec<Test>) -> Self {
-        TestProviderImpl { tests }
+    pub(crate) fn new() -> Self {
+        TestProviderImpl {
+            tests: HashMap::new(),
+        }
     }
 }
 
 impl TestProvider for TestProviderImpl {
-    fn get(&self, test_name: &str) -> Result<&Test, GetTestError> {
-        let tests: Vec<&Test> = self
-            .tests
-            .iter()
-            .filter(|test| test.name() == test_name)
-            .collect();
+    fn add_tests(&mut self, tests: Vec<Test>) -> Result<(), TestAlreadyExists> {
+        for test in tests.into_iter() {
+            let test_name = test.name().clone();
+            if self.tests.contains_key(test.name()) {
+                return Err(TestAlreadyExists(test_name));
+            }
+            self.tests.insert(test_name, test);
+        }
 
-        match tests.first() {
+        Ok(())
+    }
+
+    fn get(&self, test_name: &str) -> Result<&Test, GetTestError> {
+        match self.tests.get(test_name) {
             None => Err(TestNotFoundError(test_name.to_string()).into()),
             Some(test) => Ok(test),
         }
@@ -38,3 +50,7 @@ pub(crate) enum GetTestError {
 #[derive(Debug, thiserror::Error)]
 #[error("test '{0}' not found")]
 pub(crate) struct TestNotFoundError(pub(crate) String);
+
+#[derive(Debug, thiserror::Error)]
+#[error("test with name '{0}' already exists")]
+pub(crate) struct TestAlreadyExists(pub(crate) String);
