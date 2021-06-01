@@ -26,7 +26,6 @@ pub(crate) fn run_cli() {
             let test_result = unwrap_or_exit_app_with_error_message(
                 application_service.run_test(run_command.test_name.as_str()),
             );
-            print!("{}", test_result.output());
             exit(test_result.exit_code())
         }
     }
