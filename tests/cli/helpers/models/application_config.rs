@@ -1,22 +1,23 @@
+use std::collections::HashMap;
+
 #[derive(Debug, serde::Serialize)]
 pub(crate) struct ApplicationConfig {
-    tests: Vec<TestCommand>,
+    tests: HashMap<String, Test>,
 }
 
 impl ApplicationConfig {
-    pub(crate) fn new(tests: Vec<TestCommand>) -> Self {
+    pub(crate) fn new(tests: HashMap<String, Test>) -> Self {
         ApplicationConfig { tests }
     }
 }
 
 #[derive(Debug, serde::Serialize)]
-pub(crate) struct TestCommand {
-    name: String,
+pub(crate) struct Test {
     command: String,
 }
 
-impl TestCommand {
-    pub(crate) fn new(name: String, command: String) -> Self {
-        TestCommand { name, command }
+impl Test {
+    pub(crate) fn new(command: String) -> Self {
+        Test { command }
     }
 }
