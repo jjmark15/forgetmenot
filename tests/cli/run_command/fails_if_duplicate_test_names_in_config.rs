@@ -1,10 +1,16 @@
-use std::path::PathBuf;
+use assert_fs::prelude::PathChild;
 
-use crate::helpers::{after_error_prefix_starts_with, CliCommandBuilder};
+use crate::helpers::models::config_with_duplicate_test_name;
+use crate::helpers::{
+    after_error_prefix_starts_with, write_application_config_to_file, CliCommandBuilder,
+};
 
 #[test]
 fn fails_if_duplicate_test_names_in_config() {
-    let config_path: PathBuf = test_config_directory("config_with_duplicate_test_names.yml");
+    let temp_home_directory = assert_fs::TempDir::new().unwrap();
+    let config_path = temp_home_directory.child("config.yml").to_path_buf();
+    write_application_config_to_file(&config_with_duplicate_test_name(), config_path.as_path())
+        .unwrap();
 
     let cmd = CliCommandBuilder::new().run_test_command(config_path.as_path());
 
@@ -13,10 +19,4 @@ fn fails_if_duplicate_test_names_in_config() {
             "test with name 'command' already exists",
         ))
         .failure();
-}
-
-fn test_config_directory(file_name: &str) -> PathBuf {
-    let project_directory = std::env::current_dir().unwrap();
-
-    project_directory.join("test_files").join(file_name)
 }

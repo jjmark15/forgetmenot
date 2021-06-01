@@ -19,3 +19,10 @@ pub(crate) fn failing_test_config() -> ApplicationConfig {
 pub(crate) fn config_with_no_test() -> ApplicationConfig {
     ApplicationConfig::new(vec![])
 }
+
+pub(crate) fn config_with_duplicate_test_name() -> ApplicationConfig {
+    ApplicationConfig::new(vec![
+        TestCommand::new("command".to_string(), "echo result".to_string()),
+        TestCommand::new("command".to_string(), "echo result".to_string()),
+    ])
+}

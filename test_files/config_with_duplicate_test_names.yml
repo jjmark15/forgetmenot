@@ -1,7 +1,0 @@
----
-
-tests:
-  - name: command
-    command: "echo 1"
-  - name: command
-    command: "echo 2"
