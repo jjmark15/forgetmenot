@@ -1,4 +1,5 @@
 use std::path::PathBuf;
+
 use structopt::StructOpt;
 
 /// Project tests checklist and runner
@@ -16,5 +17,5 @@ pub(crate) struct RunCommand {
 
     /// Set config file path
     #[structopt(short, long)]
-    pub(crate) config_path: PathBuf,
+    pub(crate) config_path: Option<PathBuf>,
 }

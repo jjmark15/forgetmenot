@@ -9,6 +9,8 @@ use crate::helpers::models::ApplicationConfig;
 mod cmd_builder;
 pub(crate) mod models;
 
+pub(crate) const DEFAULT_CONFIG_FILENAME: &str = "forgetmenot.yml";
+
 pub(crate) fn write_application_config_to_file(
     application_config: &ApplicationConfig,
     path: &Path,

@@ -1,3 +1,4 @@
+mod config_discovery;
 mod fails_if_cannot_find_config;
 mod fails_if_duplicate_test_names_in_config;
 mod fails_if_test_does_not_exist;

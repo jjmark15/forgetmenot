@@ -12,7 +12,9 @@ fn fails_if_duplicate_test_names_in_config() {
     write_application_config_to_file(&config_with_duplicate_test_name(), config_path.as_path())
         .unwrap();
 
-    let cmd = CliCommandBuilder::new().run_test_command(config_path.as_path());
+    let cmd = CliCommandBuilder::new()
+        .run_test_command()
+        .with_config(config_path.as_path());
 
     cmd.assert()
         .stderr(after_error_prefix_starts_with(
