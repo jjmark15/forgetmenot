@@ -12,6 +12,6 @@ fn fails_if_cannot_find_config() {
         .with_config(config_path.as_path());
 
     cmd.assert()
-        .stderr(after_error_prefix_starts_with("config was not found"))
+        .stderr(after_error_prefix_starts_with("could not open config file"))
         .failure();
 }

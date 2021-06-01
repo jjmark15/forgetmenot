@@ -1,4 +1,5 @@
 use std::error::Error;
+use std::path::{Path, PathBuf};
 use std::process::exit;
 
 use owo_colors::OwoColorize;
@@ -17,7 +18,9 @@ pub(crate) fn run_cli() {
     let opts: CliOptions = CliOptions::from_args();
     match opts {
         CliOptions::Run(run_command) => {
-            let application_config = application_config(&run_command);
+            let application_config_path = application_config_path(&run_command);
+            std::env::set_current_dir(&application_config_path.parent().unwrap()).unwrap();
+            let application_config = application_config(&application_config_path);
             let application_service = application_service(&application_config);
             let test_result = unwrap_or_exit_app_with_error_message(
                 application_service.run_test(run_command.test_name.as_str()),
@@ -37,15 +40,17 @@ fn application_service(config: &ApplicationConfig) -> impl ApplicationService {
     ApplicationServiceImpl::new(test_runner)
 }
 
-fn application_config(run_command: &RunCommand) -> ApplicationConfig {
-    let config_reader = FileConfigReader::new();
+fn application_config_path(run_command: &RunCommand) -> PathBuf {
     let config_locator = ConfigFileLocator::new();
-    let config_path = run_command.config_path.clone().unwrap_or_else(|| {
+    run_command.config_path.clone().unwrap_or_else(|| {
         let current_directory =
             std::env::current_dir().expect("could not determine current directory");
         unwrap_or_exit_app_with_error_message(config_locator.locate(&current_directory))
-    });
+    })
+}
 
+fn application_config(config_path: &Path) -> ApplicationConfig {
+    let config_reader = FileConfigReader::new();
     unwrap_or_exit_app_with_error_message(config_reader.read(&config_path))
 }
 

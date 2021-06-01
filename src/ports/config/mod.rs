@@ -11,14 +11,14 @@ pub(crate) trait ConfigReader {
 #[derive(Debug, thiserror::Error)]
 pub(crate) enum ReadConfigError {
     #[error(transparent)]
-    NotFound(#[from] ConfigNotFoundError),
+    NotFound(#[from] OpenConfigError),
     #[error(transparent)]
     BadConfig(#[from] BadConfigError),
 }
 
 #[derive(Debug, thiserror::Error, Default)]
-#[error("config was not found")]
-pub(crate) struct ConfigNotFoundError;
+#[error("could not open config file")]
+pub(crate) struct OpenConfigError;
 
 #[derive(Debug, thiserror::Error, Default)]
 #[error("config is bad")]
