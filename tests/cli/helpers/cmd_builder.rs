@@ -26,7 +26,6 @@ impl CliCommandBuilder {
         self.select_subcommand(CliSubcommand::TestCommand);
         self.cmd.args(&[
             "run",
-            "--test-name",
             "command",
             "--config-path",
             config_path.as_os_str().to_str().unwrap(),

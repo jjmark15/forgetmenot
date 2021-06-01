@@ -12,7 +12,6 @@ pub(crate) enum CliOptions {
 #[derive(StructOpt, Debug)]
 pub(crate) struct RunCommand {
     /// Test command name
-    #[structopt(short, long)]
     pub(crate) test_name: String,
 
     /// Set config file path
