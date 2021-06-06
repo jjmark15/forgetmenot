@@ -1,3 +1,3 @@
 mod helpers;
-mod run_command;
+mod run_test;
 mod version;
