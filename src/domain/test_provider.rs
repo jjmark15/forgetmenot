@@ -6,6 +6,8 @@ pub(crate) trait TestProvider {
     fn add_tests(&mut self, tests: Vec<Test>) -> Result<(), TestAlreadyExists>;
 
     fn get(&self, test_name: &str) -> Result<&Test, GetTestError>;
+
+    fn get_all(&self) -> Vec<&Test>;
 }
 
 pub(crate) struct TestProviderImpl {
@@ -38,6 +40,10 @@ impl TestProvider for TestProviderImpl {
             None => Err(TestNotFoundError(test_name.to_string()).into()),
             Some(test) => Ok(test),
         }
+    }
+
+    fn get_all(&self) -> Vec<&Test> {
+        self.tests.values().collect()
     }
 }
 

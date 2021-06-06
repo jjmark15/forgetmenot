@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 pub(crate) use error::*;
 
 use crate::domain::test_provider::TestProvider;
@@ -11,11 +13,11 @@ pub(crate) trait TestRunner {
 
 pub(crate) struct TestRunnerImpl<CE: CommandExecutor, TP: TestProvider> {
     command_executor: CE,
-    test_provider: TP,
+    test_provider: Rc<TP>,
 }
 
 impl<CE: CommandExecutor, TP: TestProvider> TestRunnerImpl<CE, TP> {
-    pub(crate) fn new(command_executor: CE, test_provider: TP) -> Self {
+    pub(crate) fn new(command_executor: CE, test_provider: Rc<TP>) -> Self {
         TestRunnerImpl {
             command_executor,
             test_provider,

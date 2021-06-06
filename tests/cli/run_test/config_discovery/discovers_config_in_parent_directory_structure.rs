@@ -4,7 +4,8 @@ use assert_fs::TempDir;
 
 use crate::helpers::models::basic_config;
 use crate::helpers::{
-    write_application_config_to_file, CliCommandBuilder, DEFAULT_CONFIG_FILENAME,
+    write_application_config_to_file, CliCommandBuilder, SubcommandBuilder,
+    DEFAULT_CONFIG_FILENAME, DEFAULT_TEST_NAME,
 };
 
 #[test]
@@ -16,9 +17,8 @@ fn discovers_config_in_1_parent_directory() {
         .to_path_buf();
     write_application_config_to_file(&basic_config(), config_path.as_path()).unwrap();
 
-    let cmd = CliCommandBuilder::new()
-        .with_current_dir(child_directory.path())
-        .run_test_command();
+    let cmd = CliCommandBuilder::run_test(DEFAULT_TEST_NAME)
+        .with_current_directory(child_directory.path());
 
     cmd.assert().success();
 }
@@ -32,9 +32,8 @@ fn discovers_config_in_2_parent_directory() {
         .to_path_buf();
     write_application_config_to_file(&basic_config(), config_path.as_path()).unwrap();
 
-    let cmd = CliCommandBuilder::new()
-        .with_current_dir(child_directory.path())
-        .run_test_command();
+    let cmd = CliCommandBuilder::run_test(DEFAULT_TEST_NAME)
+        .with_current_directory(child_directory.path());
 
     cmd.assert().success();
 }
@@ -48,9 +47,8 @@ fn discovers_config_in_3_parent_directory() {
         .to_path_buf();
     write_application_config_to_file(&basic_config(), config_path.as_path()).unwrap();
 
-    let cmd = CliCommandBuilder::new()
-        .with_current_dir(child_directory.path())
-        .run_test_command();
+    let cmd = CliCommandBuilder::run_test(DEFAULT_TEST_NAME)
+        .with_current_directory(child_directory.path());
 
     cmd.assert().success();
 }

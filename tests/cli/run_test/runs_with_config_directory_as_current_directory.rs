@@ -1,7 +1,9 @@
 use assert_fs::prelude::*;
 
 use crate::helpers::models::{ApplicationConfig, TestCommand};
-use crate::helpers::{write_application_config_to_file, CliCommandBuilder};
+use crate::helpers::{
+    write_application_config_to_file, CliCommandBuilder, SubcommandBuilder, DEFAULT_TEST_NAME,
+};
 
 #[test]
 fn runs_with_config_directory_as_current_directory() {
@@ -15,9 +17,8 @@ fn runs_with_config_directory_as_current_directory() {
     )]);
     write_application_config_to_file(&config, config_path.as_path()).unwrap();
 
-    let cmd = CliCommandBuilder::new()
-        .with_current_dir(child_directory.path())
-        .run_test_command()
+    let cmd = CliCommandBuilder::run_test(DEFAULT_TEST_NAME)
+        .with_current_directory(child_directory.path())
         .with_config(config_path.as_path());
 
     cmd.assert().success();

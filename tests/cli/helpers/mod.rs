@@ -10,6 +10,8 @@ mod cmd_builder;
 pub(crate) mod models;
 
 pub(crate) const DEFAULT_CONFIG_FILENAME: &str = "forgetmenot.yml";
+pub(crate) const DEFAULT_TEST_NAME: &str = "command";
+pub(crate) const DEFAULT_ALTERNATE_TEST_NAME: &str = "other command";
 
 pub(crate) fn write_application_config_to_file(
     application_config: &ApplicationConfig,
