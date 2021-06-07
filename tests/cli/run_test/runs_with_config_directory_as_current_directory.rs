@@ -12,8 +12,9 @@ fn runs_with_config_directory_as_current_directory() {
     child_directory.create_dir_all().unwrap();
     let config_path = temp_home_directory.child("config.yml").to_path_buf();
     let config = ApplicationConfig::new(vec![TestCommand::new(
-        "command".to_string(),
+        DEFAULT_TEST_NAME.to_string(),
         touch_command().to_string(),
+        None,
     )]);
     write_application_config_to_file(&config, config_path.as_path()).unwrap();
 

@@ -6,7 +6,7 @@ use std::rc::Rc;
 use owo_colors::OwoColorize;
 use structopt::StructOpt;
 
-use crate::application::{ApplicationService, ApplicationServiceImpl};
+use crate::application::{ApplicationService, ApplicationServiceImpl, ApplicationTest};
 use crate::domain::{Test, TestProvider, TestProviderImpl, TestRunnerImpl};
 use crate::ports::cli::structopt::cli_options::{CliOptions, ConfigCommand};
 use crate::ports::command_execution::system_process::SystemProcessCommandExecutorAdapter;
@@ -73,12 +73,20 @@ fn unwrap_or_exit_app_with_error_message<U, E: Error>(result: Result<U, E>) -> U
     }
 }
 
-fn print_list_of_tests(mut test_names: Vec<String>) {
-    test_names.sort();
+fn print_list_of_tests(mut test_names: Vec<ApplicationTest>) {
+    test_names.sort_by_key(|test| test.name().clone());
     let test_lines = test_names
         .iter()
-        .map(|name| name.bright_green().to_string())
+        .map(list_test_line)
         .collect::<Vec<String>>()
         .join("\n");
     println!("{}", test_lines);
+}
+
+fn list_test_line(test: &ApplicationTest) -> String {
+    let test_name = test.name().bright_green();
+    match test.description() {
+        None => test_name.to_string(),
+        Some(description) => format!("{} - {}", test_name, description.bright_yellow()),
+    }
 }

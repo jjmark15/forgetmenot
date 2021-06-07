@@ -22,10 +22,11 @@ impl From<SerdeApplicationConfig> for ApplicationConfig {
 pub(crate) struct SerdeTest {
     name: String,
     command: String,
+    description: Option<String>,
 }
 
 impl From<SerdeTest> for ApplicationTest {
     fn from(test: SerdeTest) -> Self {
-        ApplicationTest::new(test.name, test.command)
+        ApplicationTest::new(test.name, test.command, test.description)
     }
 }

@@ -13,7 +13,7 @@ mod test_result;
 pub(crate) trait ApplicationService {
     fn run_test(&self, test_name: &str) -> Result<TestResult, RunTestError>;
 
-    fn list_tests(&self) -> Vec<String>;
+    fn list_tests(&self) -> Vec<ApplicationTest>;
 }
 
 pub(crate) struct ApplicationServiceImpl<TR: TestRunner, TP: TestProvider> {
@@ -44,11 +44,11 @@ where
         Ok(test_result)
     }
 
-    fn list_tests(&self) -> Vec<String> {
+    fn list_tests(&self) -> Vec<ApplicationTest> {
         self.test_provider
             .get_all()
-            .iter()
-            .map(|test| test.name().clone())
+            .into_iter()
+            .map(ApplicationTest::from)
             .collect()
     }
 }

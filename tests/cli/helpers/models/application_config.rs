@@ -13,10 +13,15 @@ impl ApplicationConfig {
 pub(crate) struct TestCommand {
     name: String,
     command: String,
+    description: Option<String>,
 }
 
 impl TestCommand {
-    pub(crate) fn new(name: String, command: String) -> Self {
-        TestCommand { name, command }
+    pub(crate) fn new(name: String, command: String, description: Option<String>) -> Self {
+        TestCommand {
+            name,
+            command,
+            description,
+        }
     }
 }
