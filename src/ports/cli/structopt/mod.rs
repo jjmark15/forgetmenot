@@ -74,6 +74,10 @@ fn unwrap_or_exit_app_with_error_message<U, E: Error>(result: Result<U, E>) -> U
 }
 
 fn print_list_of_tests(test_names: Vec<String>) {
-    let test_lines = test_names.join("\n");
-    println!("### Tests ###\n\n{}", test_lines);
+    let test_lines = test_names
+        .iter()
+        .map(|name| name.bright_green().to_string())
+        .collect::<Vec<String>>()
+        .join("\n");
+    println!("{}", test_lines);
 }

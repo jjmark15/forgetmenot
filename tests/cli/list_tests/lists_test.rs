@@ -1,5 +1,7 @@
+use std::fmt::Display;
+
 use assert_fs::fixture::PathChild;
-use predicates::str::{contains, starts_with};
+use predicates::str::contains;
 
 use crate::helpers::models::{basic_config, config_with_multiple_tests};
 use crate::helpers::{
@@ -17,7 +19,7 @@ fn lists_single_test() {
 
     cmd.assert()
         .success()
-        .stdout(format!("### Tests ###\n\n{}\n", DEFAULT_TEST_NAME));
+        .stdout(format!("{}\n", green(DEFAULT_TEST_NAME)));
 }
 
 #[test]
@@ -30,7 +32,13 @@ fn lists_multiple_tests() {
 
     cmd.assert()
         .success()
-        .stdout(starts_with("### Tests ###\n\n"))
-        .stdout(contains(format!("{}\n", DEFAULT_TEST_NAME)))
-        .stdout(contains(format!("{}\n", DEFAULT_ALTERNATE_TEST_NAME)));
+        .stdout(contains(format!("{}\n", green(DEFAULT_TEST_NAME))))
+        .stdout(contains(format!(
+            "{}\n",
+            green(DEFAULT_ALTERNATE_TEST_NAME)
+        )));
+}
+
+fn green<S: AsRef<str> + Display>(string: S) -> String {
+    format!("\u{1b}[92m{}\u{1b}[0m", string)
 }
