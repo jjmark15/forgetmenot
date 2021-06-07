@@ -73,7 +73,8 @@ fn unwrap_or_exit_app_with_error_message<U, E: Error>(result: Result<U, E>) -> U
     }
 }
 
-fn print_list_of_tests(test_names: Vec<String>) {
+fn print_list_of_tests(mut test_names: Vec<String>) {
+    test_names.sort();
     let test_lines = test_names
         .iter()
         .map(|name| name.bright_green().to_string())
