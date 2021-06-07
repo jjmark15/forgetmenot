@@ -6,6 +6,7 @@ pub(crate) use run_test::RunTestCommandBuilder;
 pub(crate) use subcommand::SubcommandBuilder;
 
 use crate::helpers::cmd_builder::subcommand::SubcommandBase;
+use crate::helpers::APPLICATION_NAME;
 
 mod list_tests;
 mod run_test;
@@ -31,6 +32,6 @@ impl CliCommandBuilder {
     }
 
     fn binary_command() -> Command {
-        Command::cargo_bin("forgetmenot").unwrap()
+        Command::cargo_bin(APPLICATION_NAME).unwrap()
     }
 }

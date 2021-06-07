@@ -6,7 +6,7 @@ use assert_cmd::Command;
 pub(crate) trait SubcommandBuilder {
     fn assert(self) -> Assert;
 
-    fn with_current_directory(self, directory: &Path) -> Self;
+    fn with_current_directory<P: AsRef<Path>>(self, directory: P) -> Self;
 }
 
 pub(crate) struct SubcommandBase {
@@ -22,8 +22,8 @@ impl SubcommandBase {
         }
     }
 
-    pub(crate) fn with_current_directory(&mut self, directory: &Path) {
-        self.current_directory = Some(directory.to_path_buf());
+    pub(crate) fn with_current_directory<P: AsRef<Path>>(&mut self, directory: P) {
+        self.current_directory = Some(directory.as_ref().to_path_buf());
     }
 
     pub(crate) fn cmd(mut self) -> Command {

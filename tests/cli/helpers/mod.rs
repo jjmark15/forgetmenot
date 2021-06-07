@@ -3,11 +3,13 @@ use std::path::Path;
 use predicates::str::{starts_with, StartsWithPredicate};
 
 pub(crate) use cmd_builder::*;
+pub(crate) use test_directory::*;
 
 use crate::helpers::models::ApplicationConfig;
 
 mod cmd_builder;
 pub(crate) mod models;
+mod test_directory;
 
 pub(crate) const DEFAULT_CONFIG_FILENAME: &str = "forgetmenot.yml";
 pub(crate) const DEFAULT_TEST_COMMAND: &str = "echo result";
@@ -15,10 +17,12 @@ pub(crate) const DEFAULT_TEST_NAME: &str = "command";
 pub(crate) const ALTERNATE_TEST_NAME: &str = "other command";
 pub(crate) const DEFAULT_TEST_DESCRIPTION: &str = "test description";
 pub(crate) const ALTERNATE_TEST_DESCRIPTION: &str = "test description";
+pub(crate) const APPLICATION_NAME: &str = "forgetmenot";
+pub(crate) const DEFAULT_PROJECT_NAME: &str = "project";
 
-pub(crate) fn write_application_config_to_file(
+pub(crate) fn write_application_config_to_file<P: AsRef<Path>>(
     application_config: &ApplicationConfig,
-    path: &Path,
+    path: P,
 ) -> std::io::Result<()> {
     std::fs::write(path, serde_yaml::to_string(application_config).unwrap())
 }
@@ -32,4 +36,16 @@ where
         pattern.into()
     );
     starts_with(string)
+}
+
+pub(crate) fn prefix_with_discovered_config<S: AsRef<str>>(
+    string: S,
+    config_directory_name: &str,
+) -> String {
+    format!(
+        "Discovered '{}' {} config\n\n{}",
+        config_directory_name,
+        APPLICATION_NAME,
+        string.as_ref()
+    )
 }

@@ -22,6 +22,7 @@ pub(crate) fn run_cli() {
             let application_config_path = application_config_path(&run_command);
             std::env::set_current_dir(&application_config_path.parent().unwrap()).unwrap();
             let application_config = application_config(&application_config_path);
+            print_discovered_config_parent_directory(application_config_path.as_path());
             let application_service = application_service(&application_config);
             let test_result = unwrap_or_exit_app_with_error_message(
                 application_service.run_test(run_command.test_name.as_str()),
@@ -32,6 +33,7 @@ pub(crate) fn run_cli() {
             let application_config_path = application_config_path(&list_command);
             std::env::set_current_dir(&application_config_path.parent().unwrap()).unwrap();
             let application_config = application_config(&application_config_path);
+            print_discovered_config_parent_directory(application_config_path.as_path());
             let application_service = application_service(&application_config);
             print_list_of_tests(application_service.list_tests());
         }
@@ -89,4 +91,20 @@ fn list_test_line(test: &ApplicationTest) -> String {
         None => test_name.to_string(),
         Some(description) => format!("{} - {}", test_name, description.bright_yellow()),
     }
+}
+
+fn print_discovered_config_parent_directory(config_path: &Path) {
+    let message = format!(
+        "Discovered '{}' forgetmenot config",
+        fsio::path::get_basename(
+            config_path
+                .parent()
+                .unwrap()
+                .to_string_lossy()
+                .to_string()
+                .as_str()
+        )
+        .unwrap()
+    );
+    println!("{}\n", message);
 }

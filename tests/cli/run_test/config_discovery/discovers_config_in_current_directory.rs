@@ -1,21 +1,28 @@
 use assert_fs::prelude::*;
+use predicates::str::starts_with;
 
 use crate::helpers::models::basic_config;
 use crate::helpers::{
-    write_application_config_to_file, CliCommandBuilder, SubcommandBuilder,
-    DEFAULT_CONFIG_FILENAME, DEFAULT_TEST_NAME,
+    prefix_with_discovered_config, write_application_config_to_file, CliCommandBuilder,
+    SubcommandBuilder, TestDirectoryManager, DEFAULT_CONFIG_FILENAME, DEFAULT_PROJECT_NAME,
+    DEFAULT_TEST_NAME,
 };
 
 #[test]
 fn discovers_config_in_current_directory() {
-    let temp_home_directory = assert_fs::TempDir::new().unwrap();
-    let config_path = temp_home_directory
-        .child(DEFAULT_CONFIG_FILENAME)
-        .to_path_buf();
-    write_application_config_to_file(&basic_config(), config_path.as_path()).unwrap();
+    let test_directory_manager = TestDirectoryManager::new(DEFAULT_PROJECT_NAME);
+    let config_path = test_directory_manager
+        .test_directory()
+        .child(DEFAULT_CONFIG_FILENAME);
+    write_application_config_to_file(&basic_config(), &config_path).unwrap();
 
     let cmd = CliCommandBuilder::run_test(DEFAULT_TEST_NAME)
-        .with_current_directory(temp_home_directory.path());
+        .with_current_directory(test_directory_manager.test_directory());
 
-    cmd.assert().success();
+    cmd.assert()
+        .success()
+        .stdout(starts_with(prefix_with_discovered_config(
+            "",
+            DEFAULT_PROJECT_NAME,
+        )));
 }

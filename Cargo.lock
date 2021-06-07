@@ -156,6 +156,7 @@ version = "0.1.0"
 dependencies = [
  "assert_cmd",
  "assert_fs",
+ "fsio",
  "owo-colors",
  "predicates",
  "serde",
@@ -163,6 +164,12 @@ dependencies = [
  "structopt",
  "thiserror",
 ]
+
+[[package]]
+name = "fsio"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a50045aa8931ae01afbc5d72439e8f57f326becb8c70d07dfc816778eff3d167"
 
 [[package]]
 name = "getrandom"

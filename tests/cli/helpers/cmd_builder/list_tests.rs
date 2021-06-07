@@ -18,8 +18,8 @@ impl ListTestsCommandBuilder {
         }
     }
 
-    pub(crate) fn with_config(mut self, config_path: &Path) -> Self {
-        self.config_path = Some(config_path.to_path_buf());
+    pub(crate) fn with_config<P: AsRef<Path>>(mut self, config_path: P) -> Self {
+        self.config_path = Some(config_path.as_ref().to_path_buf());
         self
     }
 }
@@ -35,7 +35,7 @@ impl SubcommandBuilder for ListTestsCommandBuilder {
         cmd.assert()
     }
 
-    fn with_current_directory(mut self, directory: &Path) -> Self {
+    fn with_current_directory<P: AsRef<Path>>(mut self, directory: P) -> Self {
         self.subcommand_base.with_current_directory(directory);
         self
     }

@@ -2,29 +2,36 @@ use assert_fs::prelude::*;
 
 use crate::helpers::models::{ApplicationConfig, TestCommand};
 use crate::helpers::{
-    write_application_config_to_file, CliCommandBuilder, SubcommandBuilder, DEFAULT_TEST_NAME,
+    write_application_config_to_file, CliCommandBuilder, SubcommandBuilder, TestDirectoryManager,
+    DEFAULT_PROJECT_NAME, DEFAULT_TEST_NAME,
 };
 
 #[test]
 fn runs_with_config_directory_as_current_directory() {
-    let temp_home_directory = assert_fs::TempDir::new().unwrap();
-    let child_directory = temp_home_directory.child("nested");
+    let test_directory_manager = TestDirectoryManager::new(DEFAULT_PROJECT_NAME);
+    let config_path = test_directory_manager.test_directory().child("config.yml");
+    let child_directory = test_directory_manager.test_directory().child("nested");
     child_directory.create_dir_all().unwrap();
-    let config_path = temp_home_directory.child("config.yml").to_path_buf();
     let config = ApplicationConfig::new(vec![TestCommand::new(
         DEFAULT_TEST_NAME.to_string(),
         touch_command().to_string(),
         None,
     )]);
-    write_application_config_to_file(&config, config_path.as_path()).unwrap();
+    write_application_config_to_file(&config, &config_path).unwrap();
 
     let cmd = CliCommandBuilder::run_test(DEFAULT_TEST_NAME)
-        .with_current_directory(child_directory.path())
-        .with_config(config_path.as_path());
+        .with_current_directory(child_directory)
+        .with_config(config_path);
 
     cmd.assert().success();
 
-    assert_eq!(true, temp_home_directory.child("file.txt").exists());
+    assert_eq!(
+        true,
+        test_directory_manager
+            .test_directory()
+            .child("file.txt")
+            .exists()
+    );
 }
 
 fn touch_command() -> &'static str {
