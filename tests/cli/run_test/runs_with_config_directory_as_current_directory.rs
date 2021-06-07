@@ -3,13 +3,15 @@ use assert_fs::prelude::*;
 use crate::helpers::models::{ApplicationConfig, TestCommand};
 use crate::helpers::{
     write_application_config_to_file, CliCommandBuilder, SubcommandBuilder, TestDirectoryManager,
-    DEFAULT_PROJECT_NAME, DEFAULT_TEST_NAME,
+    DEFAULT_PROJECT_NAME, DEFAULT_STATED_CONFIG_FILENAME, DEFAULT_TEST_NAME,
 };
 
 #[test]
 fn runs_with_config_directory_as_current_directory() {
     let test_directory_manager = TestDirectoryManager::new(DEFAULT_PROJECT_NAME);
-    let config_path = test_directory_manager.test_directory().child("config.yml");
+    let config_path = test_directory_manager
+        .test_directory()
+        .child(DEFAULT_STATED_CONFIG_FILENAME);
     let child_directory = test_directory_manager.test_directory().child("nested");
     child_directory.create_dir_all().unwrap();
     let config = ApplicationConfig::new(vec![TestCommand::new(

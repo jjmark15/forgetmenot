@@ -11,7 +11,8 @@ mod cmd_builder;
 pub(crate) mod models;
 mod test_directory;
 
-pub(crate) const DEFAULT_CONFIG_FILENAME: &str = "forgetmenot.yml";
+pub(crate) const AUTO_DISCOVERED_CONFIG_FILENAME: &str = "forgetmenot.yml";
+pub(crate) const DEFAULT_STATED_CONFIG_FILENAME: &str = "config.yml";
 pub(crate) const DEFAULT_TEST_COMMAND: &str = "echo result";
 pub(crate) const DEFAULT_TEST_NAME: &str = "command";
 pub(crate) const ALTERNATE_TEST_NAME: &str = "other command";
