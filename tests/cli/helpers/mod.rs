@@ -24,6 +24,9 @@ pub(crate) fn after_error_prefix_starts_with<P>(pattern: P) -> StartsWithPredica
 where
     P: Into<String>,
 {
-    let string = format!("\u{1b}[91merror\u{1b}[0m: {}", pattern.into());
+    let string = format!(
+        "\u{1b}[1m\u{1b}[91merror\u{1b}[0m\u{1b}[0m: {}",
+        pattern.into()
+    );
     starts_with(string)
 }

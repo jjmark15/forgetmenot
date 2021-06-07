@@ -67,7 +67,7 @@ fn unwrap_or_exit_app_with_error_message<U, E: Error>(result: Result<U, E>) -> U
     match result {
         Ok(value) => value,
         Err(err) => {
-            eprintln!("{}: {}", "error".bright_red(), err);
+            eprintln!("{}: {}", "error".bright_red().bold(), err);
             exit(1);
         }
     }
