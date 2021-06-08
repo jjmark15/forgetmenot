@@ -37,6 +37,17 @@ pub(crate) fn run_cli() {
             let application_service = application_service(&application_config);
             print_list_of_tests(application_service.list_tests());
         }
+        CliOptions::Describe(describe_command) => {
+            let application_config_path = application_config_path(&describe_command);
+            std::env::set_current_dir(&application_config_path.parent().unwrap()).unwrap();
+            let application_config = application_config(&application_config_path);
+            print_discovered_config_parent_directory(application_config_path.as_path());
+            let application_service = application_service(&application_config);
+            let application_test = unwrap_or_exit_app_with_error_message(
+                application_service.describe_test(describe_command.test_name.as_str()),
+            );
+            print_test_description(application_test);
+        }
     }
 }
 
@@ -107,4 +118,18 @@ fn print_discovered_config_parent_directory(config_path: &Path) {
         .unwrap()
     );
     println!("{}\n", message);
+}
+
+fn print_test_description(test: ApplicationTest) {
+    let mut lines = vec![test_description_line("name", test.name())];
+    if let Some(description) = test.description() {
+        lines.push(test_description_line("description", description));
+    }
+    lines.push(test_description_line("command", test.command()));
+
+    println!("{}", lines.join("\n"))
+}
+
+fn test_description_line<S: AsRef<str>>(key: &str, value: S) -> String {
+    format!("{}: {}", key.bright_yellow(), value.as_ref())
 }

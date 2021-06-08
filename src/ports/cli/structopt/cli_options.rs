@@ -10,6 +10,8 @@ pub(crate) enum CliOptions {
     Run(RunTestCommand),
     /// List all configured tests
     List(ListTestsCommand),
+    /// Describe a configured test
+    Describe(DescribeTestCommand),
 }
 
 #[derive(StructOpt, Debug)]
@@ -36,6 +38,22 @@ pub(crate) struct ListTestsCommand {
 }
 
 impl ConfigCommand for ListTestsCommand {
+    fn config_path(&self) -> &Option<PathBuf> {
+        &self.config_path
+    }
+}
+
+#[derive(StructOpt, Debug)]
+pub(crate) struct DescribeTestCommand {
+    /// Test command name
+    pub(crate) test_name: String,
+
+    /// Set config file path
+    #[structopt(short, long)]
+    pub(crate) config_path: Option<PathBuf>,
+}
+
+impl ConfigCommand for DescribeTestCommand {
     fn config_path(&self) -> &Option<PathBuf> {
         &self.config_path
     }

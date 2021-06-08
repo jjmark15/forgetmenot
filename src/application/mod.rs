@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 pub(crate) use test::*;
 
-use crate::application::error::RunTestError;
+use crate::application::error::{DescribeTestError, RunTestError};
 use crate::application::test_result::TestResult;
 use crate::domain::{TestProvider, TestRunner};
 
@@ -14,6 +14,8 @@ pub(crate) trait ApplicationService {
     fn run_test(&self, test_name: &str) -> Result<TestResult, RunTestError>;
 
     fn list_tests(&self) -> Vec<ApplicationTest>;
+
+    fn describe_test(&self, test_name: &str) -> Result<ApplicationTest, DescribeTestError>;
 }
 
 pub(crate) struct ApplicationServiceImpl<TR: TestRunner, TP: TestProvider> {
@@ -50,5 +52,10 @@ where
             .into_iter()
             .map(ApplicationTest::from)
             .collect()
+    }
+
+    fn describe_test(&self, test_name: &str) -> Result<ApplicationTest, DescribeTestError> {
+        let test = self.test_provider.get(test_name)?;
+        Ok(test.into())
     }
 }

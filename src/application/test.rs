@@ -23,6 +23,10 @@ impl ApplicationTest {
     pub(crate) fn description(&self) -> &Option<String> {
         &self.description
     }
+
+    pub(crate) fn command(&self) -> &String {
+        &self.command
+    }
 }
 
 impl From<ApplicationTest> for Test {
