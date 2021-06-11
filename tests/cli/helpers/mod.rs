@@ -9,6 +9,7 @@ use crate::helpers::models::ApplicationConfig;
 use owo_colors::OwoColorize;
 
 mod cmd_builder;
+pub(crate) mod formatting;
 pub(crate) mod models;
 mod test_directory;
 

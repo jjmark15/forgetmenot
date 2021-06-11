@@ -7,12 +7,14 @@ pub(crate) use run_test::RunTestCommandBuilder;
 pub(crate) use subcommand::SubcommandBuilder;
 
 use crate::helpers::cmd_builder::subcommand::SubcommandBase;
+use crate::helpers::cmd_builder::view_checklist::ViewChecklistCommandBuilder;
 use crate::helpers::APPLICATION_NAME;
 
 mod describe_test;
 mod list_tests;
 mod run_test;
 mod subcommand;
+mod view_checklist;
 
 pub(crate) struct CliCommandBuilder {}
 
@@ -27,6 +29,10 @@ impl CliCommandBuilder {
 
     pub(crate) fn describe_test(test_name: &str) -> DescribeTestCommandBuilder {
         DescribeTestCommandBuilder::new(Self::subcommand_base(), test_name.to_string())
+    }
+
+    pub(crate) fn view_checklist() -> ViewChecklistCommandBuilder {
+        ViewChecklistCommandBuilder::new(Self::subcommand_base())
     }
 
     pub(crate) fn version() -> Assert {

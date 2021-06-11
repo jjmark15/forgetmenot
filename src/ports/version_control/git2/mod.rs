@@ -1,0 +1,3 @@
+pub(crate) use git2_vcs_repository_provider_adapter::Git2VcsRepositoryProvidersAdapter;
+
+mod git2_vcs_repository_provider_adapter;

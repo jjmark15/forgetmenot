@@ -1,3 +1,4 @@
+mod checklist;
 mod describe_test;
 mod helpers;
 mod list_tests;

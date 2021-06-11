@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::error::Error;
 use std::path::{Path, PathBuf};
 use std::process::exit;
@@ -7,13 +8,21 @@ use owo_colors::OwoColorize;
 use structopt::StructOpt;
 
 use crate::application::{ApplicationService, ApplicationServiceImpl, ApplicationTest};
-use crate::domain::{Test, TestProvider, TestProviderImpl, TestRunnerImpl};
+use crate::domain::{
+    Test, TestProvider, TestProviderImpl, TestRunnerImpl, VcsVersionChecklistService,
+};
 use crate::ports::cli::structopt::cli_options::{CliOptions, ConfigCommand};
 use crate::ports::command_execution::system_process::SystemProcessCommandExecutorAdapter;
 use crate::ports::config::file::{ConfigFileLocator, FileConfigReader};
 use crate::ports::config::{ApplicationConfig, ConfigReader};
+use crate::ports::persistence::filesystem::FilesystemTestHistoryRepositoryAdapter;
+use crate::ports::version_control::git2::Git2VcsRepositoryProvidersAdapter;
 
 mod cli_options;
+mod describe_test;
+mod list_tests_command;
+mod run_test_command;
+mod view_checklist_command;
 
 pub(crate) fn run_cli() {
     let opts: CliOptions = CliOptions::from_args();
@@ -36,6 +45,12 @@ pub(crate) fn run_cli() {
             );
             print_test_description(application_test);
         }
+        CliOptions::Check(cli_command) => {
+            let application_service = prepare_app_for_config_driven_command(&cli_command);
+            let checklist =
+                unwrap_or_exit_app_with_error_message(application_service.get_test_checklist());
+            print_test_checklist(checklist);
+        }
     }
 }
 
@@ -43,13 +58,14 @@ fn prepare_app_for_config_driven_command(
     config_command: &impl ConfigCommand,
 ) -> impl ApplicationService {
     let application_config_path = application_config_path(config_command);
-    std::env::set_current_dir(&application_config_path.parent().unwrap()).unwrap();
+    let project_path = application_config_path.parent().unwrap();
+    std::env::set_current_dir(&project_path).unwrap();
     let application_config = application_config(&application_config_path);
     print_discovered_config_parent_directory(application_config_path.as_path());
-    application_service(&application_config)
+    application_service(&application_config, project_path)
 }
 
-fn application_service(config: &ApplicationConfig) -> impl ApplicationService {
+fn application_service(config: &ApplicationConfig, project_path: &Path) -> impl ApplicationService {
     let command_executor = SystemProcessCommandExecutorAdapter::new();
     let mut test_provider = TestProviderImpl::new();
     unwrap_or_exit_app_with_error_message(
@@ -57,7 +73,14 @@ fn application_service(config: &ApplicationConfig) -> impl ApplicationService {
     );
     let test_provider_ref = Rc::new(test_provider);
     let test_runner = TestRunnerImpl::new(command_executor, test_provider_ref.clone());
-    ApplicationServiceImpl::new(test_runner, test_provider_ref)
+    let vcs_repository_provider = Git2VcsRepositoryProvidersAdapter::new();
+    let filesystem_test_history_repository_adapter = FilesystemTestHistoryRepositoryAdapter::new();
+    let checklist_service = VcsVersionChecklistService::new(
+        vcs_repository_provider,
+        project_path.to_path_buf(),
+        filesystem_test_history_repository_adapter,
+    );
+    ApplicationServiceImpl::new(test_runner, test_provider_ref, checklist_service)
 }
 
 fn application_config_path(run_command: &impl ConfigCommand) -> PathBuf {
@@ -92,6 +115,23 @@ fn print_list_of_tests(mut test_names: Vec<ApplicationTest>) {
         .collect::<Vec<String>>()
         .join("\n");
     println!("{}", test_lines);
+}
+
+fn print_test_checklist(test_checklist: HashMap<String, bool>) {
+    let checklist_output: String = test_checklist
+        .into_iter()
+        .map(|(test_name, checked)| checklist_line(test_name, checked))
+        .collect::<Vec<String>>()
+        .join("\n");
+    println!("{}", checklist_output);
+}
+
+fn checklist_line(test_name: String, checked: bool) -> String {
+    let checked_symbol = match checked {
+        true => '✔',
+        false => '❌',
+    };
+    format!("{}: {}", test_name.bright_yellow(), checked_symbol)
 }
 
 fn list_test_line(test: &ApplicationTest) -> String {

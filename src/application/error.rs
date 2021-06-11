@@ -26,3 +26,10 @@ impl From<crate::domain::GetTestError> for DescribeTestError {
         }
     }
 }
+
+#[derive(Debug, thiserror::Error)]
+#[error("{cause}")]
+pub(crate) struct GetChecklistError {
+    #[from]
+    pub(crate) cause: crate::domain::GetChecklistError,
+}

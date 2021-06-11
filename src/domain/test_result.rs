@@ -10,4 +10,8 @@ impl TestResult {
     pub(crate) fn exit_code(&self) -> i32 {
         self.exit_code
     }
+
+    pub(crate) fn is_success(&self) -> bool {
+        self.exit_code == 0
+    }
 }

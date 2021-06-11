@@ -1,8 +1,7 @@
-use std::fmt::Display;
-
 use assert_fs::fixture::PathChild;
 use predicates::str::starts_with;
 
+use crate::helpers::formatting::{green, yellow};
 use crate::helpers::models::{
     basic_config, config_with_multiple_tests, config_with_test_without_description,
 };
@@ -70,12 +69,4 @@ fn lists_test_that_does_not_have_description() {
 
 fn list_tests_line(test_name: &str, test_description: &str) -> String {
     format!("{} - {}\n", green(test_name), yellow(test_description))
-}
-
-fn green<S: AsRef<str> + Display>(string: S) -> String {
-    format!("\u{1b}[92m{}\u{1b}[0m", string)
-}
-
-fn yellow<S: AsRef<str> + Display>(string: S) -> String {
-    format!("\u{1b}[93m{}\u{1b}[0m", string)
 }
