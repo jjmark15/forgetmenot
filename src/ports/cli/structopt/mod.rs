@@ -106,7 +106,7 @@ fn list_test_line(test: &ApplicationTest) -> String {
 
 fn print_discovered_config_parent_directory(config_path: &Path) {
     let message = format!(
-        "Discovered '{}' forgetmenot config",
+        "Discovered {} config",
         fsio::path::get_basename(
             config_path
                 .parent()
@@ -116,6 +116,7 @@ fn print_discovered_config_parent_directory(config_path: &Path) {
                 .as_str()
         )
         .unwrap()
+        .bright_purple()
     );
     println!("{}\n", message);
 }
