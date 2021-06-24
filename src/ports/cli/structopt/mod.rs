@@ -18,37 +18,35 @@ mod cli_options;
 pub(crate) fn run_cli() {
     let opts: CliOptions = CliOptions::from_args();
     match opts {
-        CliOptions::Run(run_command) => {
-            let application_config_path = application_config_path(&run_command);
-            std::env::set_current_dir(&application_config_path.parent().unwrap()).unwrap();
-            let application_config = application_config(&application_config_path);
-            print_discovered_config_parent_directory(application_config_path.as_path());
-            let application_service = application_service(&application_config);
+        CliOptions::Run(cli_command) => {
+            let application_service = prepare_app_for_config_driven_command(&cli_command);
             let test_result = unwrap_or_exit_app_with_error_message(
-                application_service.run_test(run_command.test_name.as_str()),
+                application_service.run_test(cli_command.test_name.as_str()),
             );
             exit(test_result.exit_code())
         }
-        CliOptions::List(list_command) => {
-            let application_config_path = application_config_path(&list_command);
-            std::env::set_current_dir(&application_config_path.parent().unwrap()).unwrap();
-            let application_config = application_config(&application_config_path);
-            print_discovered_config_parent_directory(application_config_path.as_path());
-            let application_service = application_service(&application_config);
+        CliOptions::List(cli_command) => {
+            let application_service = prepare_app_for_config_driven_command(&cli_command);
             print_list_of_tests(application_service.list_tests());
         }
-        CliOptions::Describe(describe_command) => {
-            let application_config_path = application_config_path(&describe_command);
-            std::env::set_current_dir(&application_config_path.parent().unwrap()).unwrap();
-            let application_config = application_config(&application_config_path);
-            print_discovered_config_parent_directory(application_config_path.as_path());
-            let application_service = application_service(&application_config);
+        CliOptions::Describe(cli_command) => {
+            let application_service = prepare_app_for_config_driven_command(&cli_command);
             let application_test = unwrap_or_exit_app_with_error_message(
-                application_service.describe_test(describe_command.test_name.as_str()),
+                application_service.describe_test(cli_command.test_name.as_str()),
             );
             print_test_description(application_test);
         }
     }
+}
+
+fn prepare_app_for_config_driven_command(
+    config_command: &impl ConfigCommand,
+) -> impl ApplicationService {
+    let application_config_path = application_config_path(config_command);
+    std::env::set_current_dir(&application_config_path.parent().unwrap()).unwrap();
+    let application_config = application_config(&application_config_path);
+    print_discovered_config_parent_directory(application_config_path.as_path());
+    application_service(&application_config)
 }
 
 fn application_service(config: &ApplicationConfig) -> impl ApplicationService {
