@@ -1,15 +1,16 @@
 use std::path::Path;
 
+use owo_colors::OwoColorize;
 use predicates::str::{starts_with, StartsWithPredicate};
 
 pub(crate) use cmd_builder::*;
 pub(crate) use test_directory::*;
 
 use crate::helpers::models::ApplicationConfig;
-use owo_colors::OwoColorize;
 
 mod cmd_builder;
 pub(crate) mod formatting;
+pub(crate) mod git;
 pub(crate) mod models;
 mod test_directory;
 

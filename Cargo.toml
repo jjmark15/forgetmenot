@@ -9,6 +9,7 @@ edition = "2018"
 [dependencies]
 dirs = "3.0"
 fsio = "0.2"
+git2 = "0.13"
 last-git-commit = "0.2"
 owo-colors = "2.0"
 serde = { version = "1.0", features = ["derive"] }
@@ -19,5 +20,4 @@ thiserror = "1.0"
 [dev-dependencies]
 assert_cmd = "1.0"
 assert_fs = "1.0"
-git2 = "0.13"
 predicates = "1.0"

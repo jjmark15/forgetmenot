@@ -18,7 +18,7 @@ where
 {
     vcs_repository_provider: VRP,
     vcs_repository_path: PathBuf,
-    test_history_provider: THR,
+    test_history_repository: THR,
 }
 
 impl<VRP, THR> VcsVersionChecklistService<VRP, THR>
@@ -34,7 +34,7 @@ where
         VcsVersionChecklistService {
             vcs_repository_provider,
             vcs_repository_path,
-            test_history_provider,
+            test_history_repository: test_history_provider,
         }
     }
 
@@ -44,7 +44,7 @@ where
         vcs_version: &VcsVersion,
     ) -> Result<bool, ReadTestHistoryError> {
         let test_history = self
-            .test_history_provider
+            .test_history_repository
             .get(test_name)
             .map_err(|_err| ReadTestHistoryError::default())?;
 

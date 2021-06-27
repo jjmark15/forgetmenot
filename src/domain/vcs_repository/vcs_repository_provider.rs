@@ -1,6 +1,9 @@
 use std::path::Path;
 
-use crate::domain::{VcsRepository, VcsRepositoryNotFoundError, VcsRepositoryNotInitiatedError};
+use crate::domain::{
+    VcsRepository, VcsRepositoryHasNoCommitHistory, VcsRepositoryNotFoundError,
+    VcsRepositoryNotInitiatedError,
+};
 
 pub(crate) trait VcsRepositoryProvider {
     fn get(
@@ -15,4 +18,6 @@ pub(crate) enum GetVcsRepositoryError {
     NotInitiated(#[from] VcsRepositoryNotInitiatedError),
     #[error(transparent)]
     NotFound(#[from] VcsRepositoryNotFoundError),
+    #[error(transparent)]
+    NoCommitHistory(#[from] VcsRepositoryHasNoCommitHistory),
 }
