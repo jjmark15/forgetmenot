@@ -1,3 +1,5 @@
+use std::path::Path;
+
 use assert_cmd::assert::Assert;
 use assert_cmd::Command;
 
@@ -16,34 +18,42 @@ mod run_test;
 mod subcommand;
 mod view_checklist;
 
-pub(crate) struct CliCommandBuilder {}
+pub(crate) struct CliCommandBuilder {
+    binary_command: Command,
+}
 
 impl CliCommandBuilder {
-    pub(crate) fn run_test(test_name: &str) -> RunTestCommandBuilder {
-        RunTestCommandBuilder::new(Self::subcommand_base(), test_name.to_string())
+    pub(crate) fn new(home_directory: impl AsRef<Path>) -> Self {
+        CliCommandBuilder {
+            binary_command: Self::binary_command(home_directory),
+        }
     }
 
-    pub(crate) fn list_tests() -> ListTestsCommandBuilder {
-        ListTestsCommandBuilder::new(Self::subcommand_base())
+    pub(crate) fn run_test(self, test_name: &str) -> RunTestCommandBuilder {
+        RunTestCommandBuilder::new(self.subcommand_base(), test_name.to_string())
     }
 
-    pub(crate) fn describe_test(test_name: &str) -> DescribeTestCommandBuilder {
-        DescribeTestCommandBuilder::new(Self::subcommand_base(), test_name.to_string())
+    pub(crate) fn list_tests(self) -> ListTestsCommandBuilder {
+        ListTestsCommandBuilder::new(self.subcommand_base())
     }
 
-    pub(crate) fn view_checklist() -> ViewChecklistCommandBuilder {
-        ViewChecklistCommandBuilder::new(Self::subcommand_base())
+    pub(crate) fn describe_test(self, test_name: &str) -> DescribeTestCommandBuilder {
+        DescribeTestCommandBuilder::new(self.subcommand_base(), test_name.to_string())
     }
 
-    pub(crate) fn version() -> Assert {
-        Self::binary_command().arg("-V").assert()
+    pub(crate) fn view_checklist(self) -> ViewChecklistCommandBuilder {
+        ViewChecklistCommandBuilder::new(self.subcommand_base())
     }
 
-    fn subcommand_base() -> SubcommandBase {
-        SubcommandBase::new(Self::binary_command())
+    pub(crate) fn version(mut self) -> Assert {
+        self.binary_command.arg("-V").assert()
     }
 
-    fn binary_command() -> Command {
+    fn subcommand_base(self) -> SubcommandBase {
+        SubcommandBase::new(self.binary_command)
+    }
+
+    fn binary_command(_home_directory: impl AsRef<Path>) -> Command {
         Command::cargo_bin(APPLICATION_NAME).unwrap()
     }
 }

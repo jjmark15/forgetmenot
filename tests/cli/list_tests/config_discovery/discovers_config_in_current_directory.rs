@@ -15,7 +15,8 @@ fn discovers_config_in_current_directory() {
         .child(AUTO_DISCOVERED_CONFIG_FILENAME);
     write_application_config_to_file(&basic_config(), &config_path).unwrap();
 
-    let cmd = CliCommandBuilder::list_tests()
+    let cmd = CliCommandBuilder::new(test_directory_manager.home_directory())
+        .list_tests()
         .with_current_directory(test_directory_manager.test_directory());
 
     cmd.assert()

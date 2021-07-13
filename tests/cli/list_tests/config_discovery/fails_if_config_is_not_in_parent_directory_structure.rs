@@ -7,7 +7,8 @@ use crate::helpers::{
 fn fails_if_config_is_not_in_parent_directory_structure() {
     let test_directory_manager = TestDirectoryManager::new(DEFAULT_PROJECT_NAME);
 
-    let cmd = CliCommandBuilder::list_tests()
+    let cmd = CliCommandBuilder::new(test_directory_manager.home_directory())
+        .list_tests()
         .with_current_directory(test_directory_manager.test_directory());
 
     cmd.assert()

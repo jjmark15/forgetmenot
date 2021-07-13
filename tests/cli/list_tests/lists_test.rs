@@ -20,7 +20,9 @@ fn lists_single_test() {
         .child(DEFAULT_STATED_CONFIG_FILENAME);
     write_application_config_to_file(&basic_config(), &config_path).unwrap();
 
-    let cmd = CliCommandBuilder::list_tests().with_config(config_path);
+    let cmd = CliCommandBuilder::new(test_directory_manager.home_directory())
+        .list_tests()
+        .with_config(config_path);
 
     cmd.assert().success().stdout(prefix_with_discovered_config(
         list_tests_line(DEFAULT_TEST_NAME, DEFAULT_TEST_DESCRIPTION),
@@ -36,7 +38,9 @@ fn lists_multiple_tests_in_alphabetical_order() {
         .child(DEFAULT_STATED_CONFIG_FILENAME);
     write_application_config_to_file(&config_with_multiple_tests(), &config_path).unwrap();
 
-    let cmd = CliCommandBuilder::list_tests().with_config(config_path);
+    let cmd = CliCommandBuilder::new(test_directory_manager.home_directory())
+        .list_tests()
+        .with_config(config_path);
 
     cmd.assert().success().stdout(prefix_with_discovered_config(
         format!(
@@ -57,7 +61,9 @@ fn lists_test_that_does_not_have_description() {
     write_application_config_to_file(&config_with_test_without_description(), &config_path)
         .unwrap();
 
-    let cmd = CliCommandBuilder::list_tests().with_config(config_path);
+    let cmd = CliCommandBuilder::new(test_directory_manager.home_directory())
+        .list_tests()
+        .with_config(config_path);
 
     cmd.assert()
         .success()

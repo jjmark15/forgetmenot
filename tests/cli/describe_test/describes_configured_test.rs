@@ -16,7 +16,9 @@ fn describes_configured_test() {
         .child(DEFAULT_STATED_CONFIG_FILENAME);
     write_application_config_to_file(&basic_config(), &config_path).unwrap();
 
-    let cmd = CliCommandBuilder::describe_test(DEFAULT_TEST_NAME).with_config(config_path);
+    let cmd = CliCommandBuilder::new(test_directory_manager.home_directory())
+        .describe_test(DEFAULT_TEST_NAME)
+        .with_config(config_path);
 
     cmd.assert()
         .success()

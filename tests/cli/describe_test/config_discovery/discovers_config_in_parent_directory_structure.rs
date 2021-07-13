@@ -14,7 +14,8 @@ fn discovers_config_in_1_parent_directory() {
     let config_path = nested_directory.child(AUTO_DISCOVERED_CONFIG_FILENAME);
     write_application_config_to_file(&basic_config(), config_path).unwrap();
 
-    let cmd = CliCommandBuilder::describe_test(DEFAULT_TEST_NAME)
+    let cmd = CliCommandBuilder::new(test_directory_manager.home_directory())
+        .describe_test(DEFAULT_TEST_NAME)
         .with_current_directory(nested_directory.path());
 
     cmd.assert().success();
@@ -28,7 +29,8 @@ fn discovers_config_in_2_parent_directory() {
     let config_path = nested_directory.child(AUTO_DISCOVERED_CONFIG_FILENAME);
     write_application_config_to_file(&basic_config(), config_path).unwrap();
 
-    let cmd = CliCommandBuilder::describe_test(DEFAULT_TEST_NAME)
+    let cmd = CliCommandBuilder::new(test_directory_manager.home_directory())
+        .describe_test(DEFAULT_TEST_NAME)
         .with_current_directory(nested_directory.path());
 
     cmd.assert().success();
@@ -42,7 +44,8 @@ fn discovers_config_in_3_parent_directory() {
     let config_path = nested_directory.child(AUTO_DISCOVERED_CONFIG_FILENAME);
     write_application_config_to_file(&basic_config(), config_path).unwrap();
 
-    let cmd = CliCommandBuilder::describe_test(DEFAULT_TEST_NAME)
+    let cmd = CliCommandBuilder::new(test_directory_manager.home_directory())
+        .describe_test(DEFAULT_TEST_NAME)
         .with_current_directory(nested_directory.path());
 
     cmd.assert().success();

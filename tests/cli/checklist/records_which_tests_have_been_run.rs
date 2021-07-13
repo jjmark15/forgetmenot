@@ -16,12 +16,15 @@ fn records_which_tests_have_been_run_against_the_latest_vcs_version() {
     git_repo_with_single_commit(test_repo_directory.path());
     let config_path = test_repo_directory.child(DEFAULT_STATED_CONFIG_FILENAME);
     write_application_config_to_file(&config_with_multiple_tests(), &config_path).unwrap();
-    CliCommandBuilder::run_test(DEFAULT_TEST_NAME)
+    CliCommandBuilder::new(test_directory_manager.home_directory())
+        .run_test(DEFAULT_TEST_NAME)
         .with_config(&config_path)
         .assert()
         .success();
 
-    let cmd = CliCommandBuilder::view_checklist().with_config(config_path);
+    let cmd = CliCommandBuilder::new(test_directory_manager.home_directory())
+        .view_checklist()
+        .with_config(config_path);
 
     cmd.assert().success().stdout(prefix_with_discovered_config(
         format!(
