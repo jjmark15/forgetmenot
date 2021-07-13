@@ -4,8 +4,9 @@ pub(crate) use error::*;
 
 use crate::domain::test_provider::TestProvider;
 use crate::domain::{
-    CommandExecutor, Test, TestHistoryRepository, TestResult, VcsRepositoryProvider,
+    CommandExecutor, Test, TestHistory, TestHistoryRepository, TestResult, VcsRepositoryProvider,
 };
+use std::collections::HashMap;
 
 mod error;
 
@@ -51,9 +52,15 @@ impl<
         test: &Test,
         test_result: TestResult,
     ) -> Result<(), RunTestError> {
-        let repository = self.vcs_repository_provider.get().unwrap();
+        let repository = self
+            .vcs_repository_provider
+            .get()
+            .map_err(|_e| RunTestError::UpdateTestHistory)?;
         let version = repository.version();
-        let mut test_history = self.test_history_repository.get(test.name()).unwrap();
+        let mut test_history = self
+            .test_history_repository
+            .get(test.name())
+            .unwrap_or_else(|_| TestHistory::new(HashMap::new()));
         test_history.update_result_for(version.clone(), test_result);
         self.test_history_repository
             .store(test.name(), test_history)
