@@ -42,8 +42,8 @@ impl TestHistoryRepository for FilesystemTestHistoryRepositoryAdapter {
 
     fn store(
         &self,
-        test_name: impl AsRef<str>,
-        test_history: TestHistory,
+        _test_name: impl AsRef<str>,
+        _test_history: TestHistory,
     ) -> Result<(), StoreTestHistoryError> {
         todo!("store test history")
     }

@@ -74,7 +74,9 @@ fn application_service(config: &ApplicationConfig, project_path: &Path) -> impl 
     let test_provider_ref = Rc::new(test_provider);
     let filesystem_test_history_repository_adapter =
         Rc::new(FilesystemTestHistoryRepositoryAdapter::new());
-    let vcs_repository_provider = Rc::new(Git2VcsRepositoryProvidersAdapter::new());
+    let vcs_repository_provider = Rc::new(Git2VcsRepositoryProvidersAdapter::new(
+        project_path.to_path_buf(),
+    ));
     let test_runner = TestRunnerImpl::new(
         command_executor,
         test_provider_ref.clone(),
@@ -83,7 +85,6 @@ fn application_service(config: &ApplicationConfig, project_path: &Path) -> impl 
     );
     let checklist_service = VcsVersionChecklistService::new(
         vcs_repository_provider,
-        project_path.to_path_buf(),
         filesystem_test_history_repository_adapter,
     );
     ApplicationServiceImpl::new(test_runner, test_provider_ref, checklist_service)

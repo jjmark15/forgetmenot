@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::path::PathBuf;
 use std::rc::Rc;
 
 use crate::domain::checklist::Checklist;
@@ -18,7 +17,6 @@ where
     THR: TestHistoryRepository,
 {
     vcs_repository_provider: Rc<VRP>,
-    vcs_repository_path: PathBuf,
     test_history_repository: Rc<THR>,
 }
 
@@ -27,14 +25,9 @@ where
     VRP: VcsRepositoryProvider,
     THR: TestHistoryRepository,
 {
-    pub(crate) fn new(
-        vcs_repository_provider: Rc<VRP>,
-        vcs_repository_path: PathBuf,
-        test_history_repository: Rc<THR>,
-    ) -> Self {
+    pub(crate) fn new(vcs_repository_provider: Rc<VRP>, test_history_repository: Rc<THR>) -> Self {
         VcsVersionChecklistService {
             vcs_repository_provider,
-            vcs_repository_path,
             test_history_repository,
         }
     }
@@ -66,7 +59,7 @@ where
     fn get(&self, tests: Vec<&Test>) -> Result<Checklist, GetChecklistError> {
         let repository = self
             .vcs_repository_provider
-            .get(&self.vcs_repository_path)
+            .get()
             .map_err(|_| DetermineCurrentProjectVersionError::default())?;
 
         let checklist_entries = tests

@@ -1,12 +1,10 @@
-use std::path::Path;
 use std::rc::Rc;
 
 pub(crate) use error::*;
 
 use crate::domain::test_provider::TestProvider;
 use crate::domain::{
-    CommandExecutor, StoreTestHistoryError, Test, TestHistoryRepository, TestResult,
-    VcsRepositoryProvider,
+    CommandExecutor, Test, TestHistoryRepository, TestResult, VcsRepositoryProvider,
 };
 
 mod error;
@@ -53,7 +51,7 @@ impl<
         test: &Test,
         test_result: TestResult,
     ) -> Result<(), RunTestError> {
-        let repository = self.vcs_repository_provider.get(Path::new("")).unwrap();
+        let repository = self.vcs_repository_provider.get().unwrap();
         let version = repository.version();
         let mut test_history = self.test_history_repository.get(test.name()).unwrap();
         test_history.update_result_for(version.clone(), test_result);

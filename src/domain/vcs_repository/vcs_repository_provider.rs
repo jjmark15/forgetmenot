@@ -1,15 +1,10 @@
-use std::path::Path;
-
 use crate::domain::{
     VcsRepository, VcsRepositoryHasNoCommitHistory, VcsRepositoryNotFoundError,
     VcsRepositoryNotInitiatedError,
 };
 
 pub(crate) trait VcsRepositoryProvider {
-    fn get(
-        &self,
-        vcs_repository_path: impl AsRef<Path>,
-    ) -> Result<VcsRepository, GetVcsRepositoryError>;
+    fn get(&self) -> Result<VcsRepository, GetVcsRepositoryError>;
 }
 
 #[derive(Debug, thiserror::Error)]

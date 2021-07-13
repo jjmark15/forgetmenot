@@ -1,15 +1,17 @@
-use std::path::Path;
+use std::path::PathBuf;
 
 use crate::domain::{
     GetVcsRepositoryError, VcsRepository, VcsRepositoryHasNoCommitHistory,
     VcsRepositoryNotFoundError, VcsRepositoryNotInitiatedError, VcsRepositoryProvider, VcsVersion,
 };
 
-pub(crate) struct Git2VcsRepositoryProvidersAdapter {}
+pub(crate) struct Git2VcsRepositoryProvidersAdapter {
+    repository_path: PathBuf,
+}
 
 impl Git2VcsRepositoryProvidersAdapter {
-    pub(crate) fn new() -> Self {
-        Git2VcsRepositoryProvidersAdapter {}
+    pub(crate) fn new(repository_path: PathBuf) -> Self {
+        Git2VcsRepositoryProvidersAdapter { repository_path }
     }
 
     fn get_latest_version(
@@ -25,14 +27,11 @@ impl Git2VcsRepositoryProvidersAdapter {
 }
 
 impl VcsRepositoryProvider for Git2VcsRepositoryProvidersAdapter {
-    fn get(
-        &self,
-        vcs_repository_path: impl AsRef<Path>,
-    ) -> Result<VcsRepository, GetVcsRepositoryError> {
-        if !vcs_repository_path.as_ref().exists() {
+    fn get(&self) -> Result<VcsRepository, GetVcsRepositoryError> {
+        if !self.repository_path.exists() {
             return Err(VcsRepositoryNotFoundError.into());
         }
-        let git2_repo = git2::Repository::open(vcs_repository_path.as_ref())
+        let git2_repo = git2::Repository::open(self.repository_path.as_path())
             .map_err(|_err| VcsRepositoryNotInitiatedError)?;
         let latest_version = self.get_latest_version(&git2_repo)?;
         Ok(VcsRepository::new(latest_version))
