@@ -29,8 +29,13 @@ impl FilesystemTestHistoryRepositoryAdapter {
     }
 
     fn write(&self, test_histories: &SerdeTestHistories) -> Result<(), WriteTestHistoryError> {
+        let file_path = Self::persistence_file_path();
+        let parent_directory = file_path.parent().unwrap();
+        if !parent_directory.exists() {
+            std::fs::create_dir_all(parent_directory).unwrap();
+        }
         let content = serde_yaml::to_string(test_histories).unwrap();
-        std::fs::write(&Self::persistence_file_path(), content).map_err(|_e| WriteTestHistoryError)
+        std::fs::write(&file_path, content).map_err(|_e| WriteTestHistoryError)
     }
 }
 
@@ -38,10 +43,10 @@ impl TestHistoryRepository for FilesystemTestHistoryRepositoryAdapter {
     fn get(&self, test_name: impl AsRef<str>) -> Result<TestHistory, GetTestHistoryError> {
         match self.read() {
             Ok(test_histories) => match test_histories.get(test_name) {
-                None => Err(GetTestHistoryError::default()),
+                None => Err(GetTestHistoryError::NotFound),
                 Some(test_history) => Ok(test_history.clone().into()),
             },
-            Err(_err) => Err(GetTestHistoryError::default()),
+            Err(_err) => Err(GetTestHistoryError::NotFound),
         }
     }
 
@@ -50,7 +55,10 @@ impl TestHistoryRepository for FilesystemTestHistoryRepositoryAdapter {
         test_name: impl AsRef<str>,
         test_history: TestHistory,
     ) -> Result<(), StoreTestHistoryError> {
-        let mut test_histories = self.read().map_err(|_e| StoreTestHistoryError::default())?;
+        let mut test_histories: SerdeTestHistories = match Self::persistence_file_path().exists() {
+            true => self.read().map_err(|_e| StoreTestHistoryError::default())?,
+            false => SerdeTestHistories::new(),
+        };
         test_histories.insert(test_name.as_ref().to_string(), test_history.into());
         self.write(&test_histories)
             .map_err(|_e| StoreTestHistoryError::default())?;

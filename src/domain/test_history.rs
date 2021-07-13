@@ -12,9 +12,11 @@ pub(crate) trait TestHistoryRepository {
     ) -> Result<(), StoreTestHistoryError>;
 }
 
-#[derive(Debug, thiserror::Error, Default)]
-#[error("failed to get test history")]
-pub(crate) struct GetTestHistoryError;
+#[derive(Debug, thiserror::Error)]
+pub(crate) enum GetTestHistoryError {
+    #[error("test history not found")]
+    NotFound,
+}
 
 #[derive(Debug, thiserror::Error, Default)]
 #[error("failed to store test history")]

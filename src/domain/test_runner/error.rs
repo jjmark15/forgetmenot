@@ -1,5 +1,5 @@
 use crate::domain::test_provider::GetTestError;
-use crate::domain::{ExecuteCommandError, TestNotFoundError};
+use crate::domain::{ExecuteCommandError, StoreTestHistoryError, TestNotFoundError};
 
 #[derive(Debug, thiserror::Error)]
 pub(crate) enum RunTestError {
@@ -7,8 +7,8 @@ pub(crate) enum RunTestError {
     TestNotFound(#[from] TestNotFoundError),
     #[error(transparent)]
     ExecutionFailure(#[from] ExecuteCommandError),
-    #[error("failed to update test history")]
-    UpdateTestHistory,
+    #[error(transparent)]
+    UpdateTestHistory(#[from] UpdateTestHistoryError),
 }
 
 impl From<GetTestError> for RunTestError {
@@ -17,4 +17,12 @@ impl From<GetTestError> for RunTestError {
             GetTestError::TestNotFound(err) => err.into(),
         }
     }
+}
+
+#[derive(Debug, thiserror::Error)]
+pub(crate) enum UpdateTestHistoryError {
+    #[error("failed to get current project version")]
+    GetCurrentVersion,
+    #[error(transparent)]
+    StoreTestHistory(#[from] StoreTestHistoryError),
 }

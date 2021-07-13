@@ -3,8 +3,8 @@ use std::rc::Rc;
 
 use crate::domain::checklist::Checklist;
 use crate::domain::{
-    DetermineCurrentProjectVersionError, GetChecklistError, ReadTestHistoryError, Test,
-    TestHistoryRepository, VcsRepositoryProvider, VcsVersion,
+    DetermineCurrentProjectVersionError, GetChecklistError, GetTestHistoryError,
+    ReadTestHistoryError, Test, TestHistoryRepository, VcsRepositoryProvider, VcsVersion,
 };
 
 pub(crate) trait ChecklistService {
@@ -37,17 +37,17 @@ where
         test_name: impl AsRef<str>,
         vcs_version: &VcsVersion,
     ) -> Result<bool, ReadTestHistoryError> {
-        let test_history = self
-            .test_history_repository
-            .get(test_name)
-            .map_err(|_err| ReadTestHistoryError::default())?;
+        let has_been_run = match self.test_history_repository.get(test_name) {
+            Ok(test_history) => test_history
+                .result_for(vcs_version)
+                .map(|result| result.is_success())
+                .unwrap_or(false),
+            Err(err) => match err {
+                GetTestHistoryError::NotFound => false,
+            },
+        };
 
-        let checked = test_history
-            .result_for(vcs_version)
-            .map(|result| result.is_success())
-            .unwrap_or(false);
-
-        Ok(checked)
+        Ok(has_been_run)
     }
 }
 

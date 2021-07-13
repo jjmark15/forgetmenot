@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::rc::Rc;
 
 pub(crate) use error::*;
@@ -6,7 +7,6 @@ use crate::domain::test_provider::TestProvider;
 use crate::domain::{
     CommandExecutor, Test, TestHistory, TestHistoryRepository, TestResult, VcsRepositoryProvider,
 };
-use std::collections::HashMap;
 
 mod error;
 
@@ -52,10 +52,9 @@ impl<
         test: &Test,
         test_result: TestResult,
     ) -> Result<(), RunTestError> {
-        let repository = self
-            .vcs_repository_provider
-            .get()
-            .map_err(|_e| RunTestError::UpdateTestHistory)?;
+        let repository = self.vcs_repository_provider.get().map_err(|_e| {
+            RunTestError::UpdateTestHistory(UpdateTestHistoryError::GetCurrentVersion)
+        })?;
         let version = repository.version();
         let mut test_history = self
             .test_history_repository
@@ -64,7 +63,7 @@ impl<
         test_history.update_result_for(version.clone(), test_result);
         self.test_history_repository
             .store(test.name(), test_history)
-            .map_err(|_e| RunTestError::UpdateTestHistory)
+            .map_err(|e| UpdateTestHistoryError::StoreTestHistory(e).into())
     }
 }
 

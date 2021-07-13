@@ -43,6 +43,12 @@ pub(crate) struct SerdeTestHistories {
 }
 
 impl SerdeTestHistories {
+    pub(crate) fn new() -> Self {
+        SerdeTestHistories {
+            test_histories: HashMap::new(),
+        }
+    }
+
     pub(crate) fn get(&self, test_name: impl AsRef<str>) -> Option<&SerdeTestHistory> {
         self.test_histories.get(test_name.as_ref())
     }
