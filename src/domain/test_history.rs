@@ -37,4 +37,8 @@ impl TestHistory {
     pub(crate) fn update_result_for(&mut self, version: VcsVersion, result: TestResult) {
         self.inner.insert(version, result);
     }
+
+    pub(crate) fn results(&self) -> &HashMap<VcsVersion, TestResult> {
+        &self.inner
+    }
 }

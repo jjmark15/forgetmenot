@@ -7,4 +7,8 @@ impl VcsVersion {
     pub(crate) fn new(value: String) -> Self {
         VcsVersion { value }
     }
+
+    pub(crate) fn value(&self) -> &String {
+        &self.value
+    }
 }
