@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
+use std::rc::Rc;
 
 use crate::domain::checklist::Checklist;
 use crate::domain::{
@@ -16,9 +17,9 @@ where
     VRP: VcsRepositoryProvider,
     THR: TestHistoryRepository,
 {
-    vcs_repository_provider: VRP,
+    vcs_repository_provider: Rc<VRP>,
     vcs_repository_path: PathBuf,
-    test_history_repository: THR,
+    test_history_repository: Rc<THR>,
 }
 
 impl<VRP, THR> VcsVersionChecklistService<VRP, THR>
@@ -27,14 +28,14 @@ where
     THR: TestHistoryRepository,
 {
     pub(crate) fn new(
-        vcs_repository_provider: VRP,
+        vcs_repository_provider: Rc<VRP>,
         vcs_repository_path: PathBuf,
-        test_history_provider: THR,
+        test_history_repository: Rc<THR>,
     ) -> Self {
         VcsVersionChecklistService {
             vcs_repository_provider,
             vcs_repository_path,
-            test_history_repository: test_history_provider,
+            test_history_repository,
         }
     }
 

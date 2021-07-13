@@ -1,3 +1,4 @@
+#[derive(Copy, Clone)]
 pub(crate) struct TestResult {
     exit_code: i32,
 }

@@ -4,11 +4,21 @@ use crate::domain::{TestResult, VcsVersion};
 
 pub(crate) trait TestHistoryRepository {
     fn get(&self, test_name: impl AsRef<str>) -> Result<TestHistory, GetTestHistoryError>;
+
+    fn store(
+        &self,
+        test_name: impl AsRef<str>,
+        test_history: TestHistory,
+    ) -> Result<(), StoreTestHistoryError>;
 }
 
 #[derive(Debug, thiserror::Error, Default)]
 #[error("failed to get test history")]
 pub(crate) struct GetTestHistoryError;
+
+#[derive(Debug, thiserror::Error, Default)]
+#[error("failed to store test history")]
+pub(crate) struct StoreTestHistoryError;
 
 #[derive(Default)]
 pub(crate) struct TestHistory {
@@ -22,5 +32,9 @@ impl TestHistory {
 
     pub(crate) fn result_for(&self, version: &VcsVersion) -> Option<&TestResult> {
         self.inner.get(version)
+    }
+
+    pub(crate) fn update_result_for(&mut self, version: VcsVersion, result: TestResult) {
+        self.inner.insert(version, result);
     }
 }

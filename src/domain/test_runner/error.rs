@@ -7,6 +7,8 @@ pub(crate) enum RunTestError {
     TestNotFound(#[from] TestNotFoundError),
     #[error(transparent)]
     ExecutionFailure(#[from] ExecuteCommandError),
+    #[error("failed to update test history")]
+    UpdateTestHistory,
 }
 
 impl From<GetTestError> for RunTestError {

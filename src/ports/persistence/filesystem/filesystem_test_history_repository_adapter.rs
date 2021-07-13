@@ -1,7 +1,9 @@
 use std::fs::File;
 use std::path::PathBuf;
 
-use crate::domain::{GetTestHistoryError, TestHistory, TestHistoryRepository};
+use crate::domain::{
+    GetTestHistoryError, StoreTestHistoryError, TestHistory, TestHistoryRepository,
+};
 use crate::ports::persistence::filesystem::serde_test_history::SerdeTestHistory;
 
 pub(crate) struct FilesystemTestHistoryRepositoryAdapter {}
@@ -36,6 +38,14 @@ impl TestHistoryRepository for FilesystemTestHistoryRepositoryAdapter {
                 ReadTestHistoryError::BadContent => Err(GetTestHistoryError::default()),
             },
         }
+    }
+
+    fn store(
+        &self,
+        test_name: impl AsRef<str>,
+        test_history: TestHistory,
+    ) -> Result<(), StoreTestHistoryError> {
+        todo!("store test history")
     }
 }
 
