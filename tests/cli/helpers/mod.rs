@@ -3,11 +3,13 @@ use std::path::Path;
 use owo_colors::OwoColorize;
 use predicates::str::{starts_with, StartsWithPredicate};
 
+pub(crate) use builder::*;
 pub(crate) use cmd_builder::*;
 pub(crate) use test_directory::*;
 
 use crate::helpers::models::ApplicationConfig;
 
+mod builder;
 mod cmd_builder;
 pub(crate) mod cmd_output;
 pub(crate) mod models;
