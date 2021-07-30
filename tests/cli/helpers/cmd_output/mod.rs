@@ -1,7 +1,9 @@
 use std::fmt::Display;
 
+pub(crate) use describe_test::*;
 pub(crate) use list_tests::*;
 
+mod describe_test;
 mod list_tests;
 
 fn green<S: AsRef<str> + Display>(string: S) -> String {

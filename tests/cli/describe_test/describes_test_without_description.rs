@@ -1,6 +1,7 @@
 use assert_fs::prelude::*;
 use predicates::str::starts_with;
 
+use crate::helpers::cmd_output::DescribeTestOutput;
 use crate::helpers::models::config_with_test_without_description;
 use crate::helpers::{
     prefix_with_discovered_config, write_application_config_to_file, CliCommandBuilder,
@@ -22,10 +23,7 @@ fn describes_test_without_description() {
     cmd.assert()
         .success()
         .stdout(starts_with(prefix_with_discovered_config(
-            format!(
-                "\u{1b}[93mname\u{1b}[0m: {}\n\u{1b}[93mcommand\u{1b}[0m: {}",
-                DEFAULT_TEST_NAME, DEFAULT_TEST_COMMAND
-            ),
+            DescribeTestOutput::without_description(DEFAULT_TEST_NAME, DEFAULT_TEST_COMMAND),
             DEFAULT_PROJECT_NAME,
         )));
 }
