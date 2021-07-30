@@ -28,3 +28,19 @@ impl TestDirectoryManager {
         }
     }
 }
+
+pub fn create_child_directories_n_levels_deep(starting_directory: &ChildPath, n: u8) -> ChildPath {
+    let directory = nth_child_directory(starting_directory, n);
+    std::fs::create_dir_all(&directory).unwrap();
+    directory
+}
+
+fn nth_child_directory(starting_directory: &ChildPath, n: u8) -> ChildPath {
+    let mut directory = starting_directory.child(".");
+
+    for _i in 0..n {
+        directory = directory.child("nested");
+    }
+
+    directory
+}

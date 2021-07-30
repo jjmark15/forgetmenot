@@ -27,13 +27,10 @@ fn runs_with_config_directory_as_current_directory() {
 
     cmd.assert().success();
 
-    assert_eq!(
-        true,
-        test_directory_manager
-            .test_directory()
-            .child("file.txt")
-            .exists()
-    );
+    assert!(test_directory_manager
+        .test_directory()
+        .child("file.txt")
+        .exists());
 }
 
 fn touch_command() -> &'static str {

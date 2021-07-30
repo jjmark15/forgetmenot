@@ -61,12 +61,18 @@ fn application_service(config: &ApplicationConfig) -> impl ApplicationService {
 }
 
 fn application_config_path(run_command: &impl ConfigCommand) -> PathBuf {
-    let config_locator = ConfigFileLocator::new();
-    run_command.config_path().clone().unwrap_or_else(|| {
-        let current_directory =
-            std::env::current_dir().expect("could not determine current directory");
-        unwrap_or_exit_app_with_error_message(config_locator.locate(&current_directory))
-    })
+    match run_command.config_path() {
+        None => {
+            let current_directory =
+                std::env::current_dir().expect("could not determine current directory");
+            unwrap_or_exit_app_with_error_message(
+                ConfigFileLocator::new().locate(&current_directory),
+            )
+        }
+        Some(config_file_path) => {
+            std::fs::canonicalize(config_file_path).unwrap_or_else(|_| config_file_path.clone())
+        }
+    }
 }
 
 fn application_config(config_path: &Path) -> ApplicationConfig {

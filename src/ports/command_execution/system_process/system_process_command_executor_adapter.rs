@@ -13,7 +13,9 @@ impl SystemProcessCommandExecutorAdapter {
 impl CommandExecutor for SystemProcessCommandExecutorAdapter {
     fn execute(&self, command: &TestCommand) -> Result<TestResult, ExecuteCommandError> {
         let spawn_result = if cfg!(target_os = "windows") {
-            Command::new("cmd").args(&["/C", command.string()]).spawn()
+            Command::new("powershell")
+                .args(&["-Command", command.string()])
+                .spawn()
         } else {
             let shell: String = std::env::var("SHELL").unwrap_or_else(|_| "sh".to_string());
             Command::new(shell).arg("-c").arg(command.string()).spawn()

@@ -1,3 +1,2 @@
-mod discovers_config_in_current_directory;
-mod discovers_config_in_parent_directory_structure;
-mod fails_if_config_is_not_in_parent_directory_structure;
+mod auto_discovery;
+mod manual_discovery;
