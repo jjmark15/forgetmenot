@@ -1,3 +1,5 @@
+use std::path::{Path, PathBuf};
+
 use assert_fs::fixture::PathChild;
 use predicates::str::starts_with;
 
@@ -5,9 +7,8 @@ use crate::helpers::models::basic_config;
 use crate::helpers::{
     create_child_directories_n_levels_deep, prefix_with_discovered_config,
     write_application_config_to_file, CliCommandBuilder, SubcommandBuilder, TestDirectoryManager,
-    DEFAULT_PROJECT_NAME, DEFAULT_STATED_CONFIG_FILENAME,
+    DEFAULT_NESTED_DIRECTORY_NAME, DEFAULT_PROJECT_NAME, DEFAULT_STATED_CONFIG_FILENAME,
 };
-use std::path::{Path, PathBuf};
 
 #[test]
 fn accepts_relative_config_path_in_same_directory() {
@@ -37,7 +38,7 @@ fn accepts_relative_config_path_in_child_directory() {
     let config_path = nested_directory.child(DEFAULT_STATED_CONFIG_FILENAME);
     write_application_config_to_file(&basic_config(), &config_path).unwrap();
     let relative_config_path: PathBuf = Path::new(".")
-        .join("nested")
+        .join(DEFAULT_NESTED_DIRECTORY_NAME)
         .join(DEFAULT_STATED_CONFIG_FILENAME);
 
     let cmd = CliCommandBuilder::list_tests()
@@ -46,5 +47,8 @@ fn accepts_relative_config_path_in_child_directory() {
 
     cmd.assert()
         .success()
-        .stdout(starts_with(prefix_with_discovered_config("", "nested")));
+        .stdout(starts_with(prefix_with_discovered_config(
+            "",
+            DEFAULT_NESTED_DIRECTORY_NAME,
+        )));
 }

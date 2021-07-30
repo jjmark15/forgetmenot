@@ -22,6 +22,7 @@ pub(crate) const DEFAULT_TEST_DESCRIPTION: &str = "test description";
 pub(crate) const ALTERNATE_TEST_DESCRIPTION: &str = "test description";
 pub(crate) const APPLICATION_NAME: &str = "forgetmenot";
 pub(crate) const DEFAULT_PROJECT_NAME: &str = "project";
+pub(crate) const DEFAULT_NESTED_DIRECTORY_NAME: &str = "nested";
 
 pub(crate) fn write_application_config_to_file<P: AsRef<Path>>(
     application_config: &ApplicationConfig,

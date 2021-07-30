@@ -1,6 +1,8 @@
 use assert_fs::fixture::{ChildPath, PathChild, PathCreateDir};
 use assert_fs::TempDir;
 
+use crate::helpers::DEFAULT_NESTED_DIRECTORY_NAME;
+
 pub(crate) struct TestDirectoryManager {
     temp_directory_home: TempDir,
     test_directory_name: String,
@@ -39,7 +41,7 @@ fn nth_child_directory(starting_directory: &ChildPath, n: u8) -> ChildPath {
     let mut directory = starting_directory.child(".");
 
     for _i in 0..n {
-        directory = directory.child("nested");
+        directory = directory.child(DEFAULT_NESTED_DIRECTORY_NAME);
     }
 
     directory

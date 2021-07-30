@@ -3,7 +3,8 @@ use assert_fs::prelude::*;
 use crate::helpers::models::{ApplicationConfig, TestCommand};
 use crate::helpers::{
     write_application_config_to_file, CliCommandBuilder, SubcommandBuilder, TestDirectoryManager,
-    DEFAULT_PROJECT_NAME, DEFAULT_STATED_CONFIG_FILENAME, DEFAULT_TEST_NAME,
+    DEFAULT_NESTED_DIRECTORY_NAME, DEFAULT_PROJECT_NAME, DEFAULT_STATED_CONFIG_FILENAME,
+    DEFAULT_TEST_NAME,
 };
 
 #[test]
@@ -12,7 +13,9 @@ fn runs_with_config_directory_as_current_directory() {
     let config_path = test_directory_manager
         .test_directory()
         .child(DEFAULT_STATED_CONFIG_FILENAME);
-    let child_directory = test_directory_manager.test_directory().child("nested");
+    let child_directory = test_directory_manager
+        .test_directory()
+        .child(DEFAULT_NESTED_DIRECTORY_NAME);
     child_directory.create_dir_all().unwrap();
     let config = ApplicationConfig::new(vec![TestCommand::new(
         DEFAULT_TEST_NAME.to_string(),

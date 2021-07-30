@@ -7,7 +7,8 @@ use crate::helpers::models::basic_config;
 use crate::helpers::{
     create_child_directories_n_levels_deep, prefix_with_discovered_config,
     write_application_config_to_file, CliCommandBuilder, SubcommandBuilder, TestDirectoryManager,
-    DEFAULT_PROJECT_NAME, DEFAULT_STATED_CONFIG_FILENAME, DEFAULT_TEST_NAME,
+    DEFAULT_NESTED_DIRECTORY_NAME, DEFAULT_PROJECT_NAME, DEFAULT_STATED_CONFIG_FILENAME,
+    DEFAULT_TEST_NAME,
 };
 
 #[test]
@@ -38,7 +39,7 @@ fn accepts_relative_config_path_in_child_directory() {
     let config_path = nested_directory.child(DEFAULT_STATED_CONFIG_FILENAME);
     write_application_config_to_file(&basic_config(), &config_path).unwrap();
     let relative_config_path: PathBuf = Path::new(".")
-        .join("nested")
+        .join(DEFAULT_NESTED_DIRECTORY_NAME)
         .join(DEFAULT_STATED_CONFIG_FILENAME);
 
     let cmd = CliCommandBuilder::describe_test(DEFAULT_TEST_NAME)
@@ -47,5 +48,8 @@ fn accepts_relative_config_path_in_child_directory() {
 
     cmd.assert()
         .success()
-        .stdout(starts_with(prefix_with_discovered_config("", "nested")));
+        .stdout(starts_with(prefix_with_discovered_config(
+            "",
+            DEFAULT_NESTED_DIRECTORY_NAME,
+        )));
 }
