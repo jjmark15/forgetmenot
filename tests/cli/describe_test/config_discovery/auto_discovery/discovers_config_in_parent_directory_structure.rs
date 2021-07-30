@@ -1,9 +1,10 @@
-use assert_fs::fixture::{ChildPath, PathChild};
+use assert_fs::fixture::PathChild;
 
 use crate::helpers::models::basic_config;
 use crate::helpers::{
-    write_application_config_to_file, CliCommandBuilder, SubcommandBuilder, TestDirectoryManager,
-    AUTO_DISCOVERED_CONFIG_FILENAME, DEFAULT_PROJECT_NAME, DEFAULT_TEST_NAME,
+    create_child_directories_n_levels_deep, write_application_config_to_file, CliCommandBuilder,
+    SubcommandBuilder, TestDirectoryManager, AUTO_DISCOVERED_CONFIG_FILENAME, DEFAULT_PROJECT_NAME,
+    DEFAULT_TEST_NAME,
 };
 
 #[test]
@@ -46,20 +47,4 @@ fn discovers_config_in_3_parent_directory() {
         .with_current_directory(nested_directory.path());
 
     cmd.assert().success();
-}
-
-fn nth_child_directory(starting_directory: &ChildPath, n: u8) -> ChildPath {
-    let mut directory = starting_directory.child("../../../../..");
-
-    for _i in 0..n {
-        directory = directory.child("nested");
-    }
-
-    directory
-}
-
-fn create_child_directories_n_levels_deep(starting_directory: &ChildPath, n: u8) -> ChildPath {
-    let directory = nth_child_directory(starting_directory, n);
-    std::fs::create_dir_all(&directory).unwrap();
-    directory
 }
