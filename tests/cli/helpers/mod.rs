@@ -1,14 +1,15 @@
 use std::path::Path;
 
+use owo_colors::OwoColorize;
 use predicates::str::{starts_with, StartsWithPredicate};
 
 pub(crate) use cmd_builder::*;
 pub(crate) use test_directory::*;
 
 use crate::helpers::models::ApplicationConfig;
-use owo_colors::OwoColorize;
 
 mod cmd_builder;
+pub(crate) mod cmd_output;
 pub(crate) mod models;
 mod test_directory;
 
@@ -40,13 +41,13 @@ where
     starts_with(string)
 }
 
-pub(crate) fn prefix_with_discovered_config<S: AsRef<str>>(
+pub(crate) fn prefix_with_discovered_config<S: ToString>(
     string: S,
     config_directory_name: &str,
 ) -> String {
     format!(
         "Discovered {} config\n\n{}",
         config_directory_name.bright_purple(),
-        string.as_ref()
+        string.to_string()
     )
 }

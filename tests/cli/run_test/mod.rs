@@ -3,5 +3,5 @@ mod fails_if_cannot_find_config;
 mod fails_if_duplicate_test_names_in_config;
 mod fails_if_test_does_not_exist;
 mod fails_if_test_is_a_failure;
-mod runs_command_defined_in_config;
+mod runs_test;
 mod runs_with_config_directory_as_current_directory;
