@@ -38,7 +38,7 @@ where
     P: Into<String>,
 {
     let string = format!(
-        "\u{1b}[1m\u{1b}[91merror\u{1b}[0m\u{1b}[0m: {}",
+        "\u{1b}[1m\u{1b}[91merror\u{1b}[39m\u{1b}[0m: {}",
         pattern.into()
     );
     starts_with(string)
