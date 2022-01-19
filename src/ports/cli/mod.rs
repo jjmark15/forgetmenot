@@ -1,1 +1,1 @@
-pub(crate) mod structopt;
+pub(crate) mod clap;

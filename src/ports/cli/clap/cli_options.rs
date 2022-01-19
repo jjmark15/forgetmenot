@@ -1,10 +1,10 @@
 use std::path::PathBuf;
 
-use structopt::StructOpt;
+use clap::Parser;
 
 /// Project tests checklist and runner
-#[derive(StructOpt, Debug)]
-#[structopt(name = "forgetmenot")]
+#[derive(Parser, Debug)]
+#[clap(name = "forgetmenot", version)]
 pub(crate) enum CliOptions {
     /// Run a configured test
     Run(RunTestCommand),
@@ -14,13 +14,13 @@ pub(crate) enum CliOptions {
     Describe(DescribeTestCommand),
 }
 
-#[derive(StructOpt, Debug)]
+#[derive(Parser, Debug)]
 pub(crate) struct RunTestCommand {
     /// Test command name
     pub(crate) test_name: String,
 
     /// Set config file path
-    #[structopt(short, long)]
+    #[clap(short, long)]
     pub(crate) config_path: Option<PathBuf>,
 }
 
@@ -30,10 +30,10 @@ impl ConfigCommand for RunTestCommand {
     }
 }
 
-#[derive(StructOpt, Debug)]
+#[derive(Parser, Debug)]
 pub(crate) struct ListTestsCommand {
     /// Set config file path
-    #[structopt(short, long)]
+    #[clap(short, long)]
     pub(crate) config_path: Option<PathBuf>,
 }
 
@@ -43,13 +43,13 @@ impl ConfigCommand for ListTestsCommand {
     }
 }
 
-#[derive(StructOpt, Debug)]
+#[derive(Parser, Debug)]
 pub(crate) struct DescribeTestCommand {
     /// Test command name
     pub(crate) test_name: String,
 
     /// Set config file path
-    #[structopt(short, long)]
+    #[clap(short, long)]
     pub(crate) config_path: Option<PathBuf>,
 }
 

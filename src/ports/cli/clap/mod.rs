@@ -3,20 +3,20 @@ use std::path::{Path, PathBuf};
 use std::process::exit;
 use std::rc::Rc;
 
+use clap::Parser;
 use owo_colors::OwoColorize;
-use structopt::StructOpt;
 
 use crate::application::{ApplicationService, ApplicationServiceImpl, ApplicationTest};
 use crate::domain::{Test, TestProvider, TestProviderImpl, TestRunnerImpl};
-use crate::ports::cli::structopt::cli_options::{CliOptions, ConfigCommand};
+use crate::ports::cli::clap::cli_options::{CliOptions, ConfigCommand};
 use crate::ports::command_execution::system_process::SystemProcessCommandExecutorAdapter;
-use crate::ports::config::file::{ConfigFileLocator, FileConfigReader};
 use crate::ports::config::{ApplicationConfig, ConfigReader};
+use crate::ports::config::file::{ConfigFileLocator, FileConfigReader};
 
 mod cli_options;
 
 pub(crate) fn run_cli() {
-    let opts: CliOptions = CliOptions::from_args();
+    let opts: CliOptions = CliOptions::parse();
     match opts {
         CliOptions::Run(cli_command) => {
             let application_service = prepare_app_for_config_driven_command(&cli_command);
@@ -119,8 +119,8 @@ fn print_discovered_config_parent_directory(config_path: &Path) {
                 .to_string()
                 .as_str()
         )
-        .unwrap()
-        .bright_purple()
+            .unwrap()
+            .bright_purple()
     );
     println!("{}\n", message);
 }
