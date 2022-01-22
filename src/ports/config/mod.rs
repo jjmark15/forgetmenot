@@ -24,16 +24,7 @@ pub(crate) struct OpenConfigError;
 #[error("config is bad")]
 pub(crate) struct BadConfigError;
 
+#[derive(derive_new::new, derive_getters::Getters)]
 pub(crate) struct ApplicationConfig {
     tests: Vec<ApplicationTest>,
-}
-
-impl ApplicationConfig {
-    pub(crate) fn new(tests: Vec<ApplicationTest>) -> Self {
-        ApplicationConfig { tests }
-    }
-
-    pub(crate) fn tests(&self) -> &Vec<ApplicationTest> {
-        &self.tests
-    }
 }

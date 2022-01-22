@@ -1,12 +1,9 @@
 use std::path::{Path, PathBuf};
 
+#[derive(derive_new::new)]
 pub(crate) struct ConfigFileLocator {}
 
 impl ConfigFileLocator {
-    pub(crate) fn new() -> Self {
-        ConfigFileLocator {}
-    }
-
     pub(crate) fn locate(&self, starting_directory: &Path) -> Result<PathBuf, NoConfigFound> {
         let file_name = "forgetmenot.yml";
         match find_path_containing_recursive(starting_directory, file_name) {

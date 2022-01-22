@@ -1,24 +1,19 @@
 use std::path::{Path, PathBuf};
 
 use assert_cmd::assert::Assert;
+use derive_new::new;
 
 use crate::helpers::cmd_builder::subcommand::{SubcommandBase, SubcommandBuilder};
 
+#[derive(new)]
 pub(crate) struct RunTestCommandBuilder {
-    test_name: String,
-    config_path: Option<PathBuf>,
     subcommand_base: SubcommandBase,
+    test_name: String,
+    #[new(default)]
+    config_path: Option<PathBuf>,
 }
 
 impl RunTestCommandBuilder {
-    pub(crate) fn new(subcommand_base: SubcommandBase, test_name: String) -> Self {
-        RunTestCommandBuilder {
-            subcommand_base,
-            test_name,
-            config_path: None,
-        }
-    }
-
     pub(crate) fn with_config<P: AsRef<Path>>(mut self, config_path: P) -> Self {
         self.config_path = Some(config_path.as_ref().to_path_buf());
         self

@@ -18,22 +18,10 @@ pub(crate) trait ApplicationService {
     fn describe_test(&self, test_name: &str) -> Result<ApplicationTest, DescribeTestError>;
 }
 
+#[derive(derive_new::new)]
 pub(crate) struct ApplicationServiceImpl<TR: TestRunner, TP: TestProvider> {
     test_runner: TR,
     test_provider: Rc<TP>,
-}
-
-impl<TR, TP> ApplicationServiceImpl<TR, TP>
-where
-    TR: TestRunner,
-    TP: TestProvider,
-{
-    pub(crate) fn new(test_runner: TR, test_provider: Rc<TP>) -> Self {
-        ApplicationServiceImpl {
-            test_runner,
-            test_provider,
-        }
-    }
 }
 
 impl<TR, TP> ApplicationService for ApplicationServiceImpl<TR, TP>

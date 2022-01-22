@@ -11,18 +11,10 @@ pub(crate) trait TestRunner {
     fn run_test(&self, test_name: &str) -> Result<TestResult, RunTestError>;
 }
 
+#[derive(derive_new::new)]
 pub(crate) struct TestRunnerImpl<CE: CommandExecutor, TP: TestProvider> {
     command_executor: CE,
     test_provider: Rc<TP>,
-}
-
-impl<CE: CommandExecutor, TP: TestProvider> TestRunnerImpl<CE, TP> {
-    pub(crate) fn new(command_executor: CE, test_provider: Rc<TP>) -> Self {
-        TestRunnerImpl {
-            command_executor,
-            test_provider,
-        }
-    }
 }
 
 impl<CE: CommandExecutor, TP: TestProvider> TestRunner for TestRunnerImpl<CE, TP> {

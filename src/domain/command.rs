@@ -1,13 +1,4 @@
+#[derive(derive_new::new, derive_getters::Getters)]
 pub(crate) struct TestCommand {
     string: String,
-}
-
-impl TestCommand {
-    pub(crate) fn new(string: String) -> Self {
-        TestCommand { string }
-    }
-
-    pub(crate) fn string(&self) -> &String {
-        &self.string
-    }
 }

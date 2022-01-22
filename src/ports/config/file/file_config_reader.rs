@@ -6,13 +6,8 @@ use crate::ports::config::{
     ApplicationConfig, BadConfigError, ConfigReader, OpenConfigError, ReadConfigError,
 };
 
+#[derive(derive_new::new)]
 pub(crate) struct FileConfigReader {}
-
-impl FileConfigReader {
-    pub(crate) fn new() -> Self {
-        FileConfigReader {}
-    }
-}
 
 impl ConfigReader for FileConfigReader {
     fn read(&self, config_path: &Path) -> Result<ApplicationConfig, ReadConfigError> {

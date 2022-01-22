@@ -2,6 +2,7 @@ use std::path::{Path, PathBuf};
 
 use assert_cmd::assert::Assert;
 use assert_cmd::Command;
+use derive_new::new;
 
 pub(crate) trait SubcommandBuilder {
     fn assert(self) -> Assert;
@@ -9,19 +10,14 @@ pub(crate) trait SubcommandBuilder {
     fn with_current_directory<P: AsRef<Path>>(self, directory: P) -> Self;
 }
 
+#[derive(new)]
 pub(crate) struct SubcommandBase {
-    current_directory: Option<PathBuf>,
     cmd: Command,
+    #[new(default)]
+    current_directory: Option<PathBuf>,
 }
 
 impl SubcommandBase {
-    pub(crate) fn new(cmd: Command) -> Self {
-        SubcommandBase {
-            cmd,
-            current_directory: None,
-        }
-    }
-
     pub(crate) fn with_current_directory<P: AsRef<Path>>(&mut self, directory: P) {
         self.current_directory = Some(directory.as_ref().to_path_buf());
     }

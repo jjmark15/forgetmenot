@@ -11,7 +11,7 @@ impl TestResult {
 impl From<crate::domain::TestResult> for TestResult {
     fn from(domain_result: crate::domain::TestResult) -> Self {
         TestResult {
-            exit_code: domain_result.exit_code(),
+            exit_code: *domain_result.exit_code(),
         }
     }
 }

@@ -10,16 +10,10 @@ pub(crate) trait TestProvider {
     fn get_all(&self) -> Vec<&Test>;
 }
 
+#[derive(derive_new::new)]
 pub(crate) struct TestProviderImpl {
+    #[new(default)]
     tests: HashMap<String, Test>,
-}
-
-impl TestProviderImpl {
-    pub(crate) fn new() -> Self {
-        TestProviderImpl {
-            tests: HashMap::new(),
-        }
-    }
 }
 
 impl TestProvider for TestProviderImpl {

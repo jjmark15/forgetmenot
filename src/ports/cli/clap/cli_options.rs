@@ -1,6 +1,7 @@
 use std::path::PathBuf;
 
 use clap::Parser;
+use derive_getters::Getters;
 
 /// Project tests checklist and runner
 #[derive(Parser, Debug)]
@@ -14,7 +15,7 @@ pub(crate) enum CliOptions {
     Describe(DescribeTestCommand),
 }
 
-#[derive(Parser, Debug)]
+#[derive(Parser, Debug, Getters)]
 pub(crate) struct RunTestCommand {
     /// Test command name
     pub(crate) test_name: String,
@@ -24,26 +25,14 @@ pub(crate) struct RunTestCommand {
     pub(crate) config_path: Option<PathBuf>,
 }
 
-impl ConfigCommand for RunTestCommand {
-    fn config_path(&self) -> &Option<PathBuf> {
-        &self.config_path
-    }
-}
-
-#[derive(Parser, Debug)]
+#[derive(Parser, Debug, Getters)]
 pub(crate) struct ListTestsCommand {
     /// Set config file path
     #[clap(short, long)]
     pub(crate) config_path: Option<PathBuf>,
 }
 
-impl ConfigCommand for ListTestsCommand {
-    fn config_path(&self) -> &Option<PathBuf> {
-        &self.config_path
-    }
-}
-
-#[derive(Parser, Debug)]
+#[derive(Parser, Debug, Getters)]
 pub(crate) struct DescribeTestCommand {
     /// Test command name
     pub(crate) test_name: String,
@@ -51,14 +40,4 @@ pub(crate) struct DescribeTestCommand {
     /// Set config file path
     #[clap(short, long)]
     pub(crate) config_path: Option<PathBuf>,
-}
-
-impl ConfigCommand for DescribeTestCommand {
-    fn config_path(&self) -> &Option<PathBuf> {
-        &self.config_path
-    }
-}
-
-pub(crate) trait ConfigCommand {
-    fn config_path(&self) -> &Option<PathBuf>;
 }

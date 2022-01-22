@@ -8,48 +8,43 @@ use owo_colors::OwoColorize;
 
 use crate::application::{ApplicationService, ApplicationServiceImpl, ApplicationTest};
 use crate::domain::{Test, TestProvider, TestProviderImpl, TestRunnerImpl};
-use crate::ports::cli::clap::cli_options::{CliOptions, ConfigCommand};
+use crate::ports::cli::clap::cli_options::CliOptions;
 use crate::ports::command_execution::system_process::SystemProcessCommandExecutorAdapter;
-use crate::ports::config::{ApplicationConfig, ConfigReader};
 use crate::ports::config::file::{ConfigFileLocator, FileConfigReader};
+use crate::ports::config::{ApplicationConfig, ConfigReader};
 
 mod cli_options;
 
 pub(crate) fn run_cli() {
     let opts: CliOptions = CliOptions::parse();
+
+    let config_file_path = application_config_path(&opts);
+    let config_file_path_argument = &config_file_path;
+    std::env::set_current_dir(config_file_path_argument.parent().unwrap()).unwrap();
+    print_discovered_config_parent_directory(config_file_path_argument);
+
+    let application_service = application_service(application_config(&config_file_path));
+
     match opts {
-        CliOptions::Run(cli_command) => {
-            let application_service = prepare_app_for_config_driven_command(&cli_command);
+        CliOptions::Run(command) => {
             let test_result = unwrap_or_exit_app_with_error_message(
-                application_service.run_test(cli_command.test_name.as_str()),
+                application_service.run_test(command.test_name.as_str()),
             );
             exit(test_result.exit_code())
         }
-        CliOptions::List(cli_command) => {
-            let application_service = prepare_app_for_config_driven_command(&cli_command);
+        CliOptions::List(_command) => {
             print_list_of_tests(application_service.list_tests());
         }
-        CliOptions::Describe(cli_command) => {
-            let application_service = prepare_app_for_config_driven_command(&cli_command);
+        CliOptions::Describe(command) => {
             let application_test = unwrap_or_exit_app_with_error_message(
-                application_service.describe_test(cli_command.test_name.as_str()),
+                application_service.describe_test(command.test_name.as_str()),
             );
             print_test_description(application_test);
         }
     }
 }
 
-fn prepare_app_for_config_driven_command(
-    config_command: &impl ConfigCommand,
-) -> impl ApplicationService {
-    let application_config_path = application_config_path(config_command);
-    std::env::set_current_dir(&application_config_path.parent().unwrap()).unwrap();
-    let application_config = application_config(&application_config_path);
-    print_discovered_config_parent_directory(application_config_path.as_path());
-    application_service(&application_config)
-}
-
-fn application_service(config: &ApplicationConfig) -> impl ApplicationService {
+fn application_service(config: ApplicationConfig) -> impl ApplicationService {
     let command_executor = SystemProcessCommandExecutorAdapter::new();
     let mut test_provider = TestProviderImpl::new();
     unwrap_or_exit_app_with_error_message(
@@ -60,24 +55,25 @@ fn application_service(config: &ApplicationConfig) -> impl ApplicationService {
     ApplicationServiceImpl::new(test_runner, test_provider_ref)
 }
 
-fn application_config_path(run_command: &impl ConfigCommand) -> PathBuf {
-    match run_command.config_path() {
-        None => {
-            let current_directory =
-                std::env::current_dir().expect("could not determine current directory");
-            unwrap_or_exit_app_with_error_message(
-                ConfigFileLocator::new().locate(&current_directory),
-            )
-        }
-        Some(config_file_path) => {
-            std::fs::canonicalize(config_file_path).unwrap_or_else(|_| config_file_path.clone())
-        }
+fn application_config_path(options: &CliOptions) -> PathBuf {
+    match options {
+        CliOptions::Run(config) => config.config_path(),
+        CliOptions::List(config) => config.config_path(),
+        CliOptions::Describe(config) => config.config_path(),
     }
+    .clone()
+    .map(|p| std::fs::canonicalize(p.clone()).unwrap_or(p))
+    .unwrap_or_else(|| {
+        unwrap_or_exit_app_with_error_message(
+            ConfigFileLocator::new()
+                .locate(&std::env::current_dir().expect("could not determine current directory")),
+        )
+    })
 }
 
 fn application_config(config_path: &Path) -> ApplicationConfig {
     let config_reader = FileConfigReader::new();
-    unwrap_or_exit_app_with_error_message(config_reader.read(&config_path))
+    unwrap_or_exit_app_with_error_message(config_reader.read(config_path))
 }
 
 fn unwrap_or_exit_app_with_error_message<U, E: Error>(result: Result<U, E>) -> U {
@@ -119,8 +115,8 @@ fn print_discovered_config_parent_directory(config_path: &Path) {
                 .to_string()
                 .as_str()
         )
-            .unwrap()
-            .bright_purple()
+        .unwrap()
+        .bright_purple()
     );
     println!("{}\n", message);
 }

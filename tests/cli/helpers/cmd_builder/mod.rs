@@ -26,7 +26,7 @@ impl CliCommandBuilder {
     }
 
     pub(crate) fn describe_test(test_name: &str) -> DescribeTestCommandBuilder {
-        DescribeTestCommandBuilder::new(Self::subcommand_base(), test_name.to_string())
+        DescribeTestCommandBuilder::new(test_name.to_string(), Self::subcommand_base())
     }
 
     pub(crate) fn version() -> Assert {

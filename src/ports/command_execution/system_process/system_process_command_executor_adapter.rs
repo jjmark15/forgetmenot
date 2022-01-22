@@ -1,14 +1,11 @@
 use std::process::Command;
 
+use derive_new::new;
+
 use crate::domain::{CommandExecutor, ExecuteCommandError, TestCommand, TestResult};
 
+#[derive(new)]
 pub(crate) struct SystemProcessCommandExecutorAdapter {}
-
-impl SystemProcessCommandExecutorAdapter {
-    pub(crate) fn new() -> Self {
-        SystemProcessCommandExecutorAdapter {}
-    }
-}
 
 impl CommandExecutor for SystemProcessCommandExecutorAdapter {
     fn execute(&self, command: &TestCommand) -> Result<TestResult, ExecuteCommandError> {

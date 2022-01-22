@@ -1,6 +1,6 @@
 use crate::domain::{Test, TestCommand};
 
-#[derive(Clone)]
+#[derive(Clone, derive_new::new)]
 pub(crate) struct ApplicationTest {
     name: String,
     command: String,
@@ -8,14 +8,6 @@ pub(crate) struct ApplicationTest {
 }
 
 impl ApplicationTest {
-    pub(crate) fn new(name: String, command: String, description: Option<String>) -> Self {
-        ApplicationTest {
-            name,
-            command,
-            description,
-        }
-    }
-
     pub(crate) fn name(&self) -> &String {
         &self.name
     }

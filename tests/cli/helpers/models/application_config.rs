@@ -1,21 +1,17 @@
 use crate::helpers::{Builder, DEFAULT_TEST_COMMAND, DEFAULT_TEST_DESCRIPTION, DEFAULT_TEST_NAME};
 
-#[derive(Debug, serde::Serialize)]
+#[derive(Debug, serde::Serialize, derive_new::new)]
 pub(crate) struct ApplicationConfig {
     tests: Vec<TestCommand>,
 }
 
 impl ApplicationConfig {
-    pub(crate) fn new(tests: Vec<TestCommand>) -> Self {
-        ApplicationConfig { tests }
-    }
-
     pub(crate) fn single(test: TestCommand) -> Self {
         ApplicationConfig::new(vec![test])
     }
 }
 
-#[derive(Debug, serde::Serialize)]
+#[derive(Debug, serde::Serialize, derive_new::new)]
 pub(crate) struct TestCommand {
     name: String,
     command: String,
@@ -23,14 +19,6 @@ pub(crate) struct TestCommand {
 }
 
 impl TestCommand {
-    pub(crate) fn new(name: String, command: String, description: Option<String>) -> Self {
-        TestCommand {
-            name,
-            command,
-            description,
-        }
-    }
-
     pub(crate) fn builder() -> TestCommandBuilder {
         TestCommandBuilder::default()
     }
