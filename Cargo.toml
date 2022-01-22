@@ -11,9 +11,11 @@ clap = { version = "3.0.10", features = ["derive"] }
 derive-getters = "0.2"
 derive-new = "0.5"
 fsio = "0.3"
+itertools = "0.10"
 owo-colors = "3.0"
 serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.8"
+skim = "0.9"
 thiserror = "1.0"
 
 [dev-dependencies]

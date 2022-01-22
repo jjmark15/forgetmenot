@@ -1,14 +1,18 @@
 use std::error::Error;
+use std::io::Cursor;
 use std::path::{Path, PathBuf};
 use std::process::exit;
 use std::rc::Rc;
 
 use clap::Parser;
+use itertools::Itertools;
 use owo_colors::OwoColorize;
+use skim::prelude::{SkimItemReader, SkimOptionsBuilder};
+use skim::Skim;
 
 use crate::application::{ApplicationService, ApplicationServiceImpl, ApplicationTest};
 use crate::domain::{Test, TestProvider, TestProviderImpl, TestRunnerImpl};
-use crate::ports::cli::clap::cli_options::CliOptions;
+use crate::ports::cli::clap::cli_options::{CliOptions, HasTestName};
 use crate::ports::command_execution::system_process::SystemProcessCommandExecutorAdapter;
 use crate::ports::config::file::{ConfigFileLocator, FileConfigReader};
 use crate::ports::config::{ApplicationConfig, ConfigReader};
@@ -28,7 +32,8 @@ pub(crate) fn run_cli() {
     match opts {
         CliOptions::Run(command) => {
             let test_result = unwrap_or_exit_app_with_error_message(
-                application_service.run_test(command.test_name.as_str()),
+                application_service
+                    .run_test(&get_test_name(&command, application_service.list_tests())),
             );
             exit(test_result.exit_code())
         }
@@ -37,11 +42,37 @@ pub(crate) fn run_cli() {
         }
         CliOptions::Describe(command) => {
             let application_test = unwrap_or_exit_app_with_error_message(
-                application_service.describe_test(command.test_name.as_str()),
+                application_service
+                    .describe_test(&get_test_name(&command, application_service.list_tests())),
             );
             print_test_description(application_test);
         }
     }
+}
+
+fn get_test_name(command: &impl HasTestName, test_names: Vec<ApplicationTest>) -> String {
+    if let Some(name) = command.test_name() {
+        return name.to_string();
+    }
+    let options = SkimOptionsBuilder::default()
+        .height(Some("50%"))
+        .multi(false)
+        .build()
+        .unwrap();
+
+    let item_reader = SkimItemReader::default();
+    let items = item_reader.of_bufread(Cursor::new(
+        test_names
+            .into_iter()
+            .map(|test| test.name().to_owned())
+            .join("\n"),
+    ));
+
+    let selected = Skim::run_with(&options, Some(items))
+        .and_then(|out| out.selected_items.first().cloned())
+        .unwrap();
+
+    selected.text().to_string()
 }
 
 fn application_service(config: ApplicationConfig) -> impl ApplicationService {

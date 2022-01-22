@@ -18,7 +18,7 @@ pub(crate) enum CliOptions {
 #[derive(Parser, Debug, Getters)]
 pub(crate) struct RunTestCommand {
     /// Test command name
-    pub(crate) test_name: String,
+    pub(crate) test_name: Option<String>,
 
     /// Set config file path
     #[clap(short, long)]
@@ -35,9 +35,25 @@ pub(crate) struct ListTestsCommand {
 #[derive(Parser, Debug, Getters)]
 pub(crate) struct DescribeTestCommand {
     /// Test command name
-    pub(crate) test_name: String,
+    pub(crate) test_name: Option<String>,
 
     /// Set config file path
     #[clap(short, long)]
     pub(crate) config_path: Option<PathBuf>,
+}
+
+impl HasTestName for DescribeTestCommand {
+    fn test_name(&self) -> Option<&String> {
+        self.test_name.as_ref()
+    }
+}
+
+impl HasTestName for RunTestCommand {
+    fn test_name(&self) -> Option<&String> {
+        self.test_name.as_ref()
+    }
+}
+
+pub(crate) trait HasTestName {
+    fn test_name(&self) -> Option<&String>;
 }
