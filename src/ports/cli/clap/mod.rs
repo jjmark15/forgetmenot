@@ -62,7 +62,7 @@ fn application_config_path(options: &CliOptions) -> PathBuf {
         CliOptions::Describe(config) => config.config_path(),
     }
     .clone()
-    .map(|p| std::fs::canonicalize(p.clone()).unwrap_or(p))
+    .map(|p| std::fs::canonicalize(&p).unwrap_or(p))
     .unwrap_or_else(|| {
         unwrap_or_exit_app_with_error_message(
             ConfigFileLocator::new()
