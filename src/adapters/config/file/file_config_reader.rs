@@ -1,8 +1,8 @@
 use std::fs::File;
 use std::path::Path;
 
-use crate::ports::config::file::application_config::SerdeApplicationConfig;
-use crate::ports::config::{
+use crate::adapters::config::file::application_config::SerdeApplicationConfig;
+use crate::adapters::config::{
     ApplicationConfig, BadConfigError, ConfigReader, OpenConfigError, ReadConfigError,
 };
 

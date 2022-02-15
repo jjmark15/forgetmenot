@@ -1,5 +1,5 @@
+use crate::adapters::config::ApplicationConfig;
 use crate::application::ApplicationTest;
-use crate::ports::config::ApplicationConfig;
 
 #[derive(Debug, serde::Deserialize)]
 pub(crate) struct SerdeApplicationConfig {

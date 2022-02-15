@@ -10,12 +10,12 @@ use owo_colors::OwoColorize;
 use skim::prelude::{SkimItemReader, SkimOptionsBuilder};
 use skim::Skim;
 
+use crate::adapters::cli::clap::cli_options::{CliOptions, HasTestName};
+use crate::adapters::command_execution::system_process::SystemProcessCommandExecutorAdapter;
+use crate::adapters::config::file::{ConfigFileLocator, FileConfigReader};
+use crate::adapters::config::{ApplicationConfig, ConfigReader};
 use crate::application::{ApplicationService, ApplicationServiceImpl, ApplicationTest};
 use crate::domain::{Test, TestProvider, TestProviderImpl, TestRunnerImpl};
-use crate::ports::cli::clap::cli_options::{CliOptions, HasTestName};
-use crate::ports::command_execution::system_process::SystemProcessCommandExecutorAdapter;
-use crate::ports::config::file::{ConfigFileLocator, FileConfigReader};
-use crate::ports::config::{ApplicationConfig, ConfigReader};
 
 mod cli_options;
 

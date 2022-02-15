@@ -1,8 +1,8 @@
-use crate::ports::cli::clap::run_cli;
+use crate::adapters::cli::clap::run_cli;
 
+mod adapters;
 mod application;
 mod domain;
-mod ports;
 
 #[derive(Default)]
 pub struct App;
