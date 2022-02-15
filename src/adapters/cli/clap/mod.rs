@@ -65,6 +65,7 @@ fn get_test_name(command: &impl HasTestName, test_names: Vec<ApplicationTest>) -
         test_names
             .into_iter()
             .map(|test| test.name().to_owned())
+            .sorted()
             .join("\n"),
     ));
 
