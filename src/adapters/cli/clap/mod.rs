@@ -1,16 +1,18 @@
 use std::error::Error;
+use std::io;
 use std::io::Cursor;
 use std::path::{Path, PathBuf};
 use std::process::exit;
 use std::rc::Rc;
 
-use clap::Parser;
+use clap::{CommandFactory, Parser};
+use clap_complete::generate;
 use itertools::Itertools;
 use owo_colors::OwoColorize;
 use skim::prelude::{SkimItemReader, SkimOptionsBuilder};
 use skim::Skim;
 
-use crate::adapters::cli::clap::cli_options::{CliOptions, HasTestName};
+use crate::adapters::cli::clap::cli_options::{CliOptions, HasConfigPath, HasTestName};
 use crate::adapters::command_execution::system_process::SystemProcessCommandExecutorAdapter;
 use crate::adapters::config::file::{ConfigFileLocator, FileConfigReader};
 use crate::adapters::config::{ApplicationConfig, ConfigReader};
@@ -22,30 +24,49 @@ mod cli_options;
 pub(crate) fn run_cli() {
     let opts: CliOptions = CliOptions::parse();
 
-    let config_file_path = application_config_path(&opts);
-    let config_file_path_argument = &config_file_path;
-    std::env::set_current_dir(config_file_path_argument.parent().unwrap()).unwrap();
-    print_discovered_config_parent_directory(config_file_path_argument);
-
-    let application_service = application_service(application_config(&config_file_path));
-
     match opts {
         CliOptions::Run(command) => {
+            let config_file_path = application_config_path(&command);
+            let config_file_path_argument = &config_file_path;
+            std::env::set_current_dir(config_file_path_argument.parent().unwrap()).unwrap();
+            print_discovered_config_parent_directory(config_file_path_argument);
+
+            let application_service = application_service(application_config(&config_file_path));
             let test_result = unwrap_or_exit_app_with_error_message(
                 application_service
                     .run_test(&get_test_name(&command, application_service.list_tests())),
             );
             exit(test_result.exit_code())
         }
-        CliOptions::List(_command) => {
+        CliOptions::List(command) => {
+            let config_file_path = application_config_path(&command);
+            let config_file_path_argument = &config_file_path;
+            std::env::set_current_dir(config_file_path_argument.parent().unwrap()).unwrap();
+            print_discovered_config_parent_directory(config_file_path_argument);
+
+            let application_service = application_service(application_config(&config_file_path));
             print_list_of_tests(application_service.list_tests());
         }
         CliOptions::Describe(command) => {
+            let config_file_path = application_config_path(&command);
+            let config_file_path_argument = &config_file_path;
+            std::env::set_current_dir(config_file_path_argument.parent().unwrap()).unwrap();
+            print_discovered_config_parent_directory(config_file_path_argument);
+
+            let application_service = application_service(application_config(&config_file_path));
             let application_test = unwrap_or_exit_app_with_error_message(
                 application_service
                     .describe_test(&get_test_name(&command, application_service.list_tests())),
             );
             print_test_description(application_test);
+        }
+        CliOptions::Completions(command) => {
+            generate(
+                command.shell,
+                &mut CliOptions::command(),
+                env!("CARGO_PKG_NAME"),
+                &mut io::stdout(),
+            );
         }
     }
 }
@@ -87,20 +108,17 @@ fn application_service(config: ApplicationConfig) -> impl ApplicationService {
     ApplicationServiceImpl::new(test_runner, test_provider_ref)
 }
 
-fn application_config_path(options: &CliOptions) -> PathBuf {
-    match options {
-        CliOptions::Run(config) => config.config_path(),
-        CliOptions::List(config) => config.config_path(),
-        CliOptions::Describe(config) => config.config_path(),
-    }
-    .clone()
-    .map(|p| std::fs::canonicalize(&p).unwrap_or(p))
-    .unwrap_or_else(|| {
-        unwrap_or_exit_app_with_error_message(
-            ConfigFileLocator::new()
-                .locate(&std::env::current_dir().expect("could not determine current directory")),
-        )
-    })
+fn application_config_path<C: HasConfigPath>(options: &C) -> PathBuf {
+    options
+        .config_path()
+        .map(|p| std::fs::canonicalize(&p).unwrap_or_else(|_| p.clone()))
+        .unwrap_or_else(|| {
+            unwrap_or_exit_app_with_error_message(
+                ConfigFileLocator::new().locate(
+                    &std::env::current_dir().expect("could not determine current directory"),
+                ),
+            )
+        })
 }
 
 fn application_config(config_path: &Path) -> ApplicationConfig {

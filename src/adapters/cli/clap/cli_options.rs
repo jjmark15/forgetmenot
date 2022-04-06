@@ -13,6 +13,8 @@ pub(crate) enum CliOptions {
     List(ListTestsCommand),
     /// Describe a configured test
     Describe(DescribeTestCommand),
+    /// Generate shell completions
+    Completions(CompletionCommand),
 }
 
 #[derive(Parser, Debug, Getters)]
@@ -56,4 +58,33 @@ impl HasTestName for RunTestCommand {
 
 pub(crate) trait HasTestName {
     fn test_name(&self) -> Option<&String>;
+}
+
+pub(crate) trait HasConfigPath {
+    fn config_path(&self) -> Option<&PathBuf>;
+}
+
+impl HasConfigPath for DescribeTestCommand {
+    fn config_path(&self) -> Option<&PathBuf> {
+        self.config_path.as_ref()
+    }
+}
+
+impl HasConfigPath for RunTestCommand {
+    fn config_path(&self) -> Option<&PathBuf> {
+        self.config_path.as_ref()
+    }
+}
+
+impl HasConfigPath for ListTestsCommand {
+    fn config_path(&self) -> Option<&PathBuf> {
+        self.config_path.as_ref()
+    }
+}
+
+#[derive(Parser, Debug, Getters)]
+pub(crate) struct CompletionCommand {
+    /// Specify shell type
+    #[clap(long)]
+    pub(crate) shell: clap_complete::Shell,
 }
