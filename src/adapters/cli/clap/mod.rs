@@ -29,12 +29,18 @@ pub(crate) fn run_cli() {
             let config_file_path = application_config_path(&command);
             let config_file_path_argument = &config_file_path;
             std::env::set_current_dir(config_file_path_argument.parent().unwrap()).unwrap();
-            print_discovered_config_parent_directory(config_file_path_argument);
 
             let application_service = application_service(application_config(&config_file_path));
+            let test_name = get_test_name(&command, application_service.list_tests());
+
+            if test_name.is_none() {
+                exit(0);
+            }
+
+            print_discovered_config_parent_directory(config_file_path_argument);
+
             let test_result = unwrap_or_exit_app_with_error_message(
-                application_service
-                    .run_test(&get_test_name(&command, application_service.list_tests())),
+                application_service.run_test(&test_name.unwrap()),
             );
             exit(test_result.exit_code())
         }
@@ -51,12 +57,18 @@ pub(crate) fn run_cli() {
             let config_file_path = application_config_path(&command);
             let config_file_path_argument = &config_file_path;
             std::env::set_current_dir(config_file_path_argument.parent().unwrap()).unwrap();
-            print_discovered_config_parent_directory(config_file_path_argument);
 
             let application_service = application_service(application_config(&config_file_path));
+            let test_name = get_test_name(&command, application_service.list_tests());
+
+            if test_name.is_none() {
+                exit(0);
+            }
+
+            print_discovered_config_parent_directory(config_file_path_argument);
+
             let application_test = unwrap_or_exit_app_with_error_message(
-                application_service
-                    .describe_test(&get_test_name(&command, application_service.list_tests())),
+                application_service.describe_test(&test_name.unwrap()),
             );
             print_test_description(application_test);
         }
@@ -71,9 +83,9 @@ pub(crate) fn run_cli() {
     }
 }
 
-fn get_test_name(command: &impl HasTestName, test_names: Vec<ApplicationTest>) -> String {
+fn get_test_name(command: &impl HasTestName, test_names: Vec<ApplicationTest>) -> Option<String> {
     if let Some(name) = command.test_name() {
-        return name.to_string();
+        return Some(name.to_string());
     }
     let options = SkimOptionsBuilder::default()
         .height(Some("50%"))
@@ -90,11 +102,15 @@ fn get_test_name(command: &impl HasTestName, test_names: Vec<ApplicationTest>) -
             .join("\n"),
     ));
 
-    let selected = Skim::run_with(&options, Some(items))
-        .and_then(|out| out.selected_items.first().cloned())
-        .unwrap();
+    let selected = Skim::run_with(&options, Some(items)).and_then(|out| {
+        if out.is_abort {
+            None
+        } else {
+            out.selected_items.first().cloned()
+        }
+    });
 
-    selected.text().to_string()
+    selected.map(|s| s.text().to_string())
 }
 
 fn application_service(config: ApplicationConfig) -> impl ApplicationService {
