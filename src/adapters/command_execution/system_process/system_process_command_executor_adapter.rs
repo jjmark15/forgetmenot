@@ -12,10 +12,15 @@ impl CommandExecutor for SystemProcessCommandExecutorAdapter {
         let spawn_result = if cfg!(target_os = "windows") {
             Command::new("powershell")
                 .args(&["-Command", command.string()])
+                .envs(std::env::vars())
                 .spawn()
         } else {
             let shell: String = std::env::var("SHELL").unwrap_or_else(|_| "sh".to_string());
-            Command::new(shell).arg("-c").arg(command.string()).spawn()
+            Command::new(shell)
+                .arg("-c")
+                .arg(command.string())
+                .envs(std::env::vars())
+                .spawn()
         };
 
         let result = spawn_result.and_then(|mut child| child.wait());
