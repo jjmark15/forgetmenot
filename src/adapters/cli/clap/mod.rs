@@ -13,7 +13,7 @@ use skim::prelude::{SkimItemReader, SkimOptionsBuilder};
 use skim::Skim;
 
 use crate::adapters::cli::clap::cli_options::{CliOptions, HasConfigPath, HasTestName};
-use crate::adapters::command_execution::system_process::SystemProcessCommandExecutorAdapter;
+use crate::adapters::command_execution::system_process::ShellProcessCommandExecutor;
 use crate::adapters::config::file::{ConfigFileLocator, FileConfigReader};
 use crate::adapters::config::{ApplicationConfig, ConfigReader};
 use crate::application::{ApplicationService, ApplicationServiceImpl, ApplicationTest};
@@ -114,7 +114,7 @@ fn get_test_name(command: &impl HasTestName, test_names: Vec<ApplicationTest>) -
 }
 
 fn application_service(config: ApplicationConfig) -> impl ApplicationService {
-    let command_executor = SystemProcessCommandExecutorAdapter::new();
+    let command_executor = ShellProcessCommandExecutor::new();
     let mut test_provider = TestProviderImpl::new();
     unwrap_or_exit_app_with_error_message(
         test_provider.add_tests(config.tests().iter().cloned().map(Test::from).collect()),

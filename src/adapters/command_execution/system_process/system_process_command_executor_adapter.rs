@@ -5,9 +5,9 @@ use derive_new::new;
 use crate::domain::{CommandExecutor, ExecuteCommandError, TestCommand, TestResult};
 
 #[derive(new)]
-pub(crate) struct SystemProcessCommandExecutorAdapter {}
+pub(crate) struct ShellProcessCommandExecutor {}
 
-impl CommandExecutor for SystemProcessCommandExecutorAdapter {
+impl CommandExecutor for ShellProcessCommandExecutor {
     fn execute(&self, command: &TestCommand) -> Result<TestResult, ExecuteCommandError> {
         let spawn_result = if cfg!(target_os = "windows") {
             Command::new("powershell")
